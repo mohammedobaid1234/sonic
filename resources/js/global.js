@@ -48,6 +48,7 @@ $('form').find( 'select, textarea, input' ).each(function(){
         $(this).closest('div').siblings('label'). append('<span style="color:#be4b49"> *</span>');
     }
 });
+console.log('object');
 function imageRemoveAndAppeared(image_type, $id){
     $('form').after(`
     <div class="grid-container"></div>

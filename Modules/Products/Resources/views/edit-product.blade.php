@@ -166,16 +166,16 @@
     <div class="form-group">
         <label class="col-sm-2 control-label" style="font-size: 18px">Product Attribute</label>
         <div class="col-md-10">
-            <button class="btn btn-primary" data-action="addInput"><i class="fa-solid fa-plus"></i></button>
+            <button class="btn btn-primary" data-action="addInput"><i class="fa fa-plus" aria-hidden="true"></i></button>
         </div>
     </div>
     
     <div class="form-group " id="attribute">
         @foreach ($attributes as $attribute)
         <div class="row parent-div">
-            <div class="col-md-4 parent main-div">
-                <label for="" class="col-md-4 control-label">Product Attribute 1</label>
-                <div class="col-sm-4">
+            <div class="col-md parent main-div">
+                <label for="" class="col-md control-label">Product Attribute 1</label>
+                <div class="col-sm">
                     <select name="attribute_id[]" id="attribute_id[]" class="form-control disabled-select js-example-basic-single" @if (isset($attribute[0]['variation_id']))
                     data-varition={{$attribute[0]['variation_id']}}
                     @endif 
@@ -194,7 +194,7 @@
                 <div class="child">
                     @if (isset($attribute[0]['list']))
                         @if (count($attribute[0]['list']) != 0)
-                        <div class="col-sm-4">
+                        <div class="col-sm">
                             <select name="values[]" id="values[]" class="form-control disabled-select  js-example-basic-single">
                                 <option value="">choise..</option>
                                 @foreach ($attribute[0]['list'] as $item)
@@ -205,7 +205,7 @@
                             </select>
                         </div>
                         @else
-                        <div class="col-sm-4">
+                        <div class="col-sm">
                             <input class="form-control  " name="values[]" @if ($attribute[0]['value'] )
                             value="{{ $attribute[0]['value'] }}"
                             @endif  />
@@ -218,9 +218,9 @@
                 </div>
                 
             </div>
-            <div class="col-md-4 parent main-div" >
-                <label for="" class="col-md-4 control-label">Product Attribute 2</label>
-                <div class="col-sm-4">
+            <div class="col-md parent main-div" >
+                <label for="" class="col-md control-label">Product Attribute 2</label>
+                <div class="col-sm">
                     <select name="attribute_id[]" id="attribute_id[]" class="form-control  disabled-select  js-example-basic-single">
                         <option value="">choise..</option>
                         @foreach ($variation_attributes as $variation_attribute)
@@ -235,7 +235,7 @@
                 <div class="child">
                     @if (isset($attribute[1]['list']))
                         @if (count($attribute[1]['list']) != 0)
-                        <div class="col-sm-4">
+                        <div class="col-sm">
                             <select name="values[]" id="values[]" class="form-control disabled-select js-example-basic-single">
                                 <option value="">choise..</option>
                                 @foreach ($attribute[1]['list'] as $item)
@@ -246,7 +246,7 @@
                             </select>
                         </div>
                         @else
-                        <div class="col-sm-4">
+                        <div class="col-sm">
                             <input class="form-control  disabled-select" name="values[]" @if ($attribute[1]['value'] )
                             value="{{ $attribute[1]['value'] }}"
                             @endif  />
@@ -258,8 +258,8 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-2 main-div">
-                <label for="" class="col-md-4 control-label">Quantity</label>
+            <div class="col-md main-div">
+                <label for="" class="col-md control-label">Quantity</label>
                 <div class="col-sm-8">
                     <input class="form-control  " name='quantity'
                      @if ($attribute[0]['quantity'] || $attribute[0]['quantity'] === 0 )
@@ -269,22 +269,25 @@
                     <p class="invalid-feedback"></p>
                 </div>
             </div>
-            <div class="col-md-2 main-div">
-                <label for="" class="col-md-4 control-label">Addition Price</label>
-                <div class="col-sm-5">
-                    <input class="form-control  " name='price'
-                    @if ($attribute[0]['price'] )
-                    value="{{ $attribute[0]['price'] }}"
-                    @endif 
-                    />
-                    
-                    <p class="invalid-feedback"></p>
-                </div>
-                @if (isset($attribute[0]['variation_id']))
-                 <a data-action="destroy" data-id={{$attribute[0]['variation_id']}} style="margin :10px" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-trash"></i> </a>
+            <div class="col-md main-div">
+                <label for="" class="col-md control-label">Addition Price</label>
+                <div class="col-md">
+                <input class="form-control  " name='price'
+                @if ($attribute[0]['price'] )
+                value="{{ $attribute[0]['price'] }}"
                 @endif 
+                />
+                
+                <p class="invalid-feedback"></p>
+                
+                </div>
                <div class="col-sm-2" style="color: red">
                </div>
+            </div>
+            <div class="col">
+                @if (isset($attribute[0]['variation_id']))
+                <a data-action="destroy" data-id={{$attribute[0]['variation_id']}} class="btn btn-xs btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></a>    
+               @endif 
             </div>
         </div>
         @endforeach 
@@ -307,9 +310,9 @@
     function appends(attr1 ,attr2){
         $('#attribute').append(`
                 <div class="row parent-div" >
-                    <div class="col-md-4 parent main-div">
-                        <label for="" class="col-md-4 control-label">Product Attribute 1</label>
-                        <div class="col-sm-4">
+                    <div class="col-md parent main-div">
+                        <label for="" class="col-md control-label">Product Attribute 1</label>
+                        <div class="col-sm">
                             <select name="attribute_id[]" id="attribute_id[]" class="form-control js-example-basic-single">
                                 <option value="">choise..</option>
                                 ${attr1}
@@ -318,9 +321,9 @@
                         <div class="child"></div>
                         
                     </div>
-                    <div class="col-md-4 parent main-div" >
-                        <label for="" class="col-md-4 control-label">Product Attribute 2</label>
-                        <div class="col-sm-4">
+                    <div class="col-md parent main-div" >
+                        <label for="" class="col-md control-label">Product Attribute 2</label>
+                        <div class="col-sm">
                             <select name="attribute_id[]" id="attribute_id[]" class="form-control js-example-basic-single">
                                 <option value="">choise..</option>
                                 ${attr2}
@@ -328,16 +331,16 @@
                         </div>
                         <div class="child"></div>
                     </div>
-                    <div class="col-md-2 main-div">
-                        <label for="" class="col-md-4 control-label">Quantity</label>
+                    <div class="col-md main-div">
+                        <label for="" class="col-md control-label">Quantity</label>
                         <div class="col-sm-8">
                             <input class="form-control  " name='quantity'/>
                             
                             <p class="invalid-feedback"></p>
                         </div>
                     </div>
-                    <div class="col-md-2 main-div">
-                        <label for="" class="col-md-4 control-label">Addition Price</label>
+                    <div class="col-md main-div">
+                        <label for="" class="col-md control-label">Addition Price</label>
                         <div class="col-sm-8">
                             <input class="form-control  " name='price'/>
                             
@@ -409,7 +412,7 @@
             function (data, textStatus, jqXHR) {
                 if(data == ''){
                 $this.closest('div.parent').find('.child').append(`
-                <div class="col-sm-4">
+                <div class="col-sm">
                     <input class="form-control  " name="values[]" />
                     
                     <p class="invalid-feedback"></p>
@@ -422,7 +425,7 @@
                         values +=  `<option value="${element}">${element}</option>`;  
                     });
                      $this.closest('div.parent').find('.child').append(`
-                    <div class="col-sm-4">
+                    <div class="col-sm">
                         <select name="values[]" id="values[]" class="form-control js-example-basic-single">
                             <option value="">choise..</option>
                             ${values}
@@ -444,7 +447,7 @@
         function (data, textStatus, jqXHR) {
             if(data == ''){
             $this.closest('div.parent').find('.child').append(`
-            <div class="col-sm-4">
+            <div class="col-sm">
                 <input class="form-control  " name="values[]" value="${$val}" />
                 
                 <p class="invalid-feedback"></p>
@@ -461,7 +464,7 @@
                     }
                 });
                 $this.closest('div.parent').find('.child').append(`
-                <div class="col-sm-4">
+                <div class="col-sm">
                     <select name="values[]" id="values[]" class="form-control js-example-basic-single">
                         <option value="">choise..</option>
                         ${values}

@@ -34,6 +34,7 @@
 		<link href="{{asset('/public/assets/css/themes/layout/aside/dark.css')}}" rel="stylesheet" type="text/css" />
 		<link href="{{asset('/public/assets/css/style.css')}}" rel="stylesheet" type="text/css" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css">
 		 @yield('css')
 		 <link rel="shortcut icon" href="{{asset('/public/assets/images/sonic.png')}}" />
 		 <style>
@@ -912,6 +913,15 @@
 
 
 	</script> 
+	<script> $myDropzone = '' </script>
+	<script src="{{asset('/resources/js/global.js')}}"></script>
+	@if ( LaravelLocalization::getCurrentLocale() == 'en')
+	<script src="{{asset('/resources/js/http.js')}}"></script>
+	@else
+	<script src="{{asset('/resources/js/http_ar.js')}}"></script>
+	@endif
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.0/min/dropzone.min.js"></script>
+
         @yield('js')
         @yield('script')
         <script>
@@ -1461,13 +1471,9 @@ $('.btn--filter').click(function () {
 		});
 		});
 		</script>
-		<script src="{{asset('/resources/js/global.js')}}"></script>
-		@if ( LaravelLocalization::getCurrentLocale() == 'en')
-		<script src="{{asset('/resources/js/http.js')}}"></script>
-		@else
-		<script src="{{asset('/resources/js/http_ar.js')}}"></script>
-		@endif
+		
 		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 	</body>
 	<!--end::Body-->
 </html>

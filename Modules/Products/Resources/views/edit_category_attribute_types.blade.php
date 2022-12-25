@@ -37,7 +37,15 @@
     <div class="form-group">
         <label for="" class="col-sm-2 control-label">{{__('Add List')}}</label>
         <div class="col-sm-10">
-            <button class="btn btn-primary" data-action="addInput"><i class="fa-solid fa-plus"></i></button>
+            <a data-action="addInput">
+                <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo4/dist/../src/media/svg/icons/Navigation/Plus.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <rect fill="#000000" x="4" y="11" width="16" height="2" rx="1"/>
+                        <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 12.000000) rotate(-270.000000) translate(-12.000000, -12.000000) " x="4" y="11" width="16" height="2" rx="1"/>
+                    </g>
+                </svg><!--end::Svg Icon--></span>
+            </a>
+        </i>
         </div>
     </div>
     
@@ -53,7 +61,7 @@
 <script>$id = {{$type->id}}</script>
 
 <script>
-    $this = $('button[data-action="addInput"]');
+    $this = $('a[data-action="addInput"]');
     
     function list () {
     $.get($("meta[name='BASE_URL']").attr("content") + '/admin/category_attribute_types/' + $id, '',
@@ -71,7 +79,7 @@
     }
         
     list();
-    $('button[data-action="addInput"]').on('click',function (e) {  
+    $('a[data-action="addInput"]').on('click',function (e) {  
         e.preventDefault();
         $(this).parent().append(`
         <div class="col-sm-10" style='margin-bottom: 10px;'>
