@@ -3,6 +3,12 @@ $('a#chp').on('click', function () {
         $('.modal-backdrop').remove();
     }, 1000);
 })
+$('.topbar-item').on('click', function () {  
+    setTimeout(() => {
+        $('.offcanvas-overlay').remove();
+    }, 1000);
+})
+
 $( "#change-password" ).on('submit',function( event ) {
     event.preventDefault();
     $this = $(this).find('button[type="submit"]');
@@ -48,7 +54,6 @@ $('form').find( 'select, textarea, input' ).each(function(){
         $(this).closest('div').siblings('label'). append('<span style="color:#be4b49"> *</span>');
     }
 });
-console.log('object');
 function imageRemoveAndAppeared(image_type, $id){
     $('form').after(`
     <div class="grid-container"></div>
@@ -66,7 +71,6 @@ function imageRemoveAndAppeared(image_type, $id){
         });
  
      });
-     console.log($("meta[name='csrf-token']").attr("content"));
     setTimeout(() => {
         $('a[data-action="remove_image"').on('click', function (e) {  
             e.preventDefault();

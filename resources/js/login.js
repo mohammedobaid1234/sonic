@@ -4,7 +4,6 @@ $("#btn-submit").on('click', function(event){
     // console.log($this);
     var buttonText = $this.find('button:submit').text();
 
-    console.log($.trim($this.find("input[name='email']").val()));
     $this.find("button:submit").attr('disabled', true);
     $this.find("button:submit").html('<span class="fas fa-spinner" data-fa-transform="shrink-3"></span>');
 

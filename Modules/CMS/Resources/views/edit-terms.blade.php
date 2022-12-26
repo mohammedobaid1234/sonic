@@ -97,7 +97,6 @@
     }
     $this.find("button:submit").attr('disabled', true);
     $this.find("button:submit").html('<span class="fas fa-spinner" data-fa-transform="shrink-3"></span>');
-    console.log(data);
     $.ajax({
         url: $("meta[name='BASE_URL']").attr("content") + '/admin/terms/' + $id,
         type: 'PUT',
