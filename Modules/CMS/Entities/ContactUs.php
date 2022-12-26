@@ -14,5 +14,5 @@ class ContactUs extends Model{
         return $this->belongsTo(\Modules\Users\Entities\User::class, 'created_by');
     }
    
-    protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s a'];    
+    protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s a'];   
 }

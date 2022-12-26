@@ -28,7 +28,7 @@
                             <!--begin::Content-->
                             <div class="d-flex flex-column">
                                 <a href="{{route('users.manage')}}" class="text-dark text-hover-primary font-weight-bold font-size-h4 mb-3">{{__('Users')}}</a>
-                                <div class="text-dark-75">{{$numberOFUsers}}</div>
+                                <div class="text-dark-75 font-size-h4" >{{$numberOFUsers}}</div>
                             </div>
                             <!--end::Content-->
                         </div>
@@ -59,7 +59,7 @@
                             <!--begin::Content-->
                             <div class="d-flex flex-column">
                                 <a href="{{route('orders.manage')}}" class="text-dark text-hover-primary font-weight-bold font-size-h4 mb-3">{{__('orders')}}</a>
-                                <div class="text-dark-75">{{$numberOFOrder}}</div>
+                                <div class="text-dark-75 font-size-h4" >{{$numberOFOrder}}</div>
                             </div>
                             <!--end::Content-->
                         </div>
@@ -93,7 +93,7 @@
                             <!--begin::Content-->
                             <div class="d-flex flex-column">
                                 <a href="{{route('vendors.manage')}}" class="text-dark text-hover-primary font-weight-bold font-size-h4 mb-3">{{__('Vendors')}}</a>
-                                <div class="text-dark-75">{{$numberOFVendors}}</div>
+                                <div class="text-dark-75 font-size-h4">{{$numberOFVendors}}</div>
                             </div>
                             <!--end::Content-->
                         </div>
