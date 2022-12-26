@@ -146,7 +146,7 @@
 					<!--begin::Brand-->
 					<div class="brand flex-column-auto" id="kt_brand">
 						<!--begin::Logo-->
-						<a href="{{ url(app()->getLocale().'/admin/home') }}" class="brand-logo">
+						<a href="{{route('dashboard')}}" class="brand-logo">
 							<img alt="Logo" src="{{asset('/public/assets/images/sonic.png')}}" style="max-width: 60px;" />
 						</a>
 						<!--end::Logo-->

@@ -6,7 +6,7 @@
 
 
     <!--begin::Entry-->
-    <div class="d-flex flex-column-fluid">
+    <div class="d-flex flex-column-fluid container">
         <!--begin::Container-->
         <div class="container">
             <!--begin::Card-->
