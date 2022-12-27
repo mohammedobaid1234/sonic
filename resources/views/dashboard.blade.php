@@ -58,7 +58,7 @@
                             <!--end::Icon-->
                             <!--begin::Content-->
                             <div class="d-flex flex-column">
-                                <a href="{{route('orders.manage')}}" class="text-dark text-hover-primary font-weight-bold font-size-h4 mb-3">{{__('orders')}}</a>
+                                <a href="{{route('orders.manage')}}" class="text-dark text-hover-primary font-weight-bold font-size-h4 mb-3">{{__('Orders')}}</a>
                                 <div class="text-dark-75 font-size-h4" >{{$numberOFOrder}}</div>
                             </div>
                             <!--end::Content-->
