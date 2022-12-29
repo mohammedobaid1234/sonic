@@ -857,6 +857,7 @@
 <script src="{{asset('/public/assets/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{asset('/public/assets/plugins/custom/prismjs/prismjs.bundle.js')}}"></script>
 <script src="{{asset('/public/assets/js/scripts.bundle.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script src="{{asset('/public/assets/js/pages/crud/forms/widgets/bootstrap-switch.js')}}"></script>
 <script src="{{asset('/public/assets/js/pages/crud/forms/widgets/bootstrap-touchspin.js')}}"></script>
@@ -869,6 +870,7 @@
 <script src="{{asset('/public/assets/plugins/jquery-validation/js/jquery.validate.js')}}"></script>
 <script src="{{asset('/public/assets/plugins/jquery-validation/js/additional-methods.min.js')}}"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 {{-- <script src="{{asset('/public/assets/js/pages/crud/file-upload/image-input.js')}}"></script> --}}
 {{-- <script src="{{asset('/public/assets/plugins/custom/uppy/uppy.bundle.js')}}"></script>
 <script src="{{asset('/public/assets/js/pages/crud/file-upload/uppy.js')}}"></script> --}}
@@ -913,6 +915,9 @@
 
 
 	</script> 
+	<script src="https://maps.googleapis.com/maps/api/js?key={{ENV('GOOGLE_MAP_KEY')}}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 	<script> $myDropzone = '' </script>
 	<script src="{{asset('/resources/js/global.js')}}"></script>
 	@if ( LaravelLocalization::getCurrentLocale() == 'en')
@@ -1472,7 +1477,6 @@ $('.btn--filter').click(function () {
 		});
 		</script>
 		
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 	</body>
 	<!--end::Body-->

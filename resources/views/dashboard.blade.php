@@ -5,6 +5,7 @@
 @section('content')
 <div class="container">
     <div class="container py-8">
+        
         <div class="row">
             <div class="col-lg-4">
                 <!--begin::Callout-->
@@ -102,6 +103,9 @@
                 <!--end::Callout-->
             </div>
         </div>
+        <div class="row">
+            <div id="map" style="width: 97%; height: 400px; margin : 20px auto"></div>
+        </div>
     </div>
 </div>
 <div class="row container">
@@ -153,5 +157,55 @@
     @endif
 </div>
 
+@endsection
+
+@section('js')
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script>let car_con ='/public/assets/images/car.png'</script>
+<script>let $vendorsLocations = @json($vendorsLocations)</script>
+<script>let $driversLocations = @json($driversLocations)</script>
+
+<script>
+    // console.log($vendorLocations);
+     let markers = [];
+      initMap();
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 12,
+          center: { lat: 31.469868, lng: 34.388081 },
+          mapTypeId: 'roadmap'
+        });
+        $vendorsLocations.forEach(element => {
+            element !== null ?  marker = new google.maps.Marker({
+              position:renameKey(JSON.parse(element),'long', 'lng'),
+              map: map,
+          }) : '';
+          element !== null ? console.log(renameKey(JSON.parse(element),'long', 'lng')) : console.log('error');;
+        });
+        $driversLocations.forEach(element => {
+            element !== null ?  marker = new google.maps.Marker({
+              position:renameKey(JSON.parse(element),'long', 'lng'),
+              map: map,
+                icon:car_con,
+              
+          }) : '';
+          element !== null ? console.log(renameKey(JSON.parse(element),'long', 'lng')) : console.log('error');;
+        });
+        map.addListener("click", (mapsMouseEvent) => {
+          marker.setPosition(mapsMouseEvent.latLng);
+        });
+      
+      }
+      function changeMarker(){
+        var marker = new google.maps.Marker({
+              position: { lat: 31.469868, lng: 34.388081 },
+              map: map,
+        });
+      }
+      window.initMap = initMap;
+  
+     
+  
+</script>
 @endsection
 

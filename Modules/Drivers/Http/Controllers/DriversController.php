@@ -103,6 +103,7 @@ class DriversController extends Controller{
             $driver->driving_license_ended = $request->driving_license_ended;
             $driver->driving_license_no = $request->driving_license_no;
             $driver->status_id = $request->status_id;
+            $driver->location = $request->location;
             
             $driver->type_id  = $request->type_id ;
             $driver->save();

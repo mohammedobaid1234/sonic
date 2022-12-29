@@ -25,6 +25,8 @@ class DashboardController extends Controller{
             'numberOFUsers' => \Modules\Users\Entities\User::count(),
             'numberOFVendors' => \Modules\Vendors\Entities\Vendors::count(),
             'numberOFOrder' => \Modules\Products\Entities\Orders::where('last_status', '<>', null)->count(),
+            'vendorsLocations' => \Modules\Vendors\Entities\Vendors::pluck('location'),
+            'driversLocations' => \Modules\Drivers\Entities\Driver::pluck('location'),
         ]);
     }
 }

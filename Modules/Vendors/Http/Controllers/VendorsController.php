@@ -136,6 +136,7 @@ class VendorsController extends Controller{
             $vendor->starting_time = $request->starting_time;
             $vendor->closing_time = $request->closing_time;
             $vendor->status_id = $request->status_id;
+            $vendor->location = $request->location;
 
             if($request->deactivated == 'false'){
                 $vendor->deactivated = null;

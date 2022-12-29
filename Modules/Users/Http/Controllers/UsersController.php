@@ -187,6 +187,8 @@ class UsersController extends Controller{
                 $vendor->starting_time = $starting_time;
                 $vendor->closing_time = $closing_time;
                 $vendor->status_id  = $request->status_id ;
+                $vendor->location  = $request->location ;
+
 
                 $vendor->save();
                 \DB::commit();
@@ -213,6 +215,7 @@ class UsersController extends Controller{
                 $driver->driving_license_no = $request->driving_license_no;
                 $driver->driving_license_ended = $request->driving_license_ended;
                 $driver->status_id  = $request->status_id ;
+                $driver->location  = $request->location ;
 
                 if ($request->hasFile('driving_license_image') && $request->file('driving_license_image')->isValid()) {
                     $extension = strtolower($request->file('driving_license_image')->extension());
@@ -441,7 +444,6 @@ class UsersController extends Controller{
             'email' => 'required',
             'province_id' => 'required',
         ]);
-        
         $user = \Auth::user();
         \DB::beginTransaction();
         try {
@@ -462,8 +464,10 @@ class UsersController extends Controller{
             $user->email = $request->email;
             $role = \DB::table('um_model_has_roles')->where('model_id', $user->id)->where('model_type','Modules\Users\Entities\User')->delete();
             $user->assignRole($request->role_id);
-            foreach ($request->sub_id as $sub) {
-                $user->assignRole($sub);
+            if(isset($request->sub_id) && count($request->sub_id ) > 0){
+                foreach ($request->sub_id as $sub) {
+                    $user->assignRole($sub);
+                }
             }
             $user->province_id = $request->province_id;
             $user->created_by = \Auth::id();
@@ -485,6 +489,7 @@ class UsersController extends Controller{
                 $vendor->starting_time = $starting_time;
                 $vendor->closing_time = $closing_time;
                 $vendor->status_id  = $request->status_id ;
+                $vendor->location  = $request->location ;
                 $vendor->save();
             }
             if($request->role_id == 'driver'){
@@ -501,6 +506,7 @@ class UsersController extends Controller{
                 $driver->driving_license_no = $request->driving_license_no;
                 $driver->driving_license_ended = $request->driving_license_ended;
                 $driver->status_id  = $request->status_id ;
+                $driver->location  = $request->location ;
                 $driver->save();
             }
             \DB::commit();

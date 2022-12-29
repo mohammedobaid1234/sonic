@@ -107,7 +107,11 @@
         </div>
 
     </div>
-    
+    <div class="form-group location" style="display: none">
+        <label class="col-sm-2 control-label">{{__('Location')}}</label>
+        <div class="col-sm-offset-2 col-sm-10" id="map" style="width:100%;margin:20px auto;height:300px"> </div>
+        <input name="location" value=""  />
+    </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <input id="btn-submit" value="{{__('Add')}}" type="submit" class="btn btn-primary" >
@@ -119,6 +123,24 @@
 <script>$id = {{$user->id}}</script>
 <script>$type = "{{$user_role->name}}"</script>
 <script> $sub_roles= {{$sub_roles}}</script>
+<script>
+    function initMap(lat =31.469868, lng =  34.388081) {
+        console.log(document.getElementById("map"));
+         const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat:lat , lng: lng },
+         });
+        var marker = new google.maps.Marker({
+          position:{ lat:lat , lng: lng },
+          map: map,
+        });
+        map.addListener("click", (mapsMouseEvent) => {
+        marker.setPosition(mapsMouseEvent.latLng);
+        $('input[name="location"]').val(JSON.stringify(renameKey(mapsMouseEvent.latLng.toJSON(),'lng', 'long'), null, 2) );
+        });
+    }
+    window.initMap = initMap;
+</script>
 
 <script>$lang = "{{app()->getLocale()}}"</script>
 <script>$checkType = null</script>
@@ -151,6 +173,7 @@
         sub_id: $this.find("select[name='sub_id']").val(),
         starting_time: $this.find("input[name='starting_time']").val(),
         closing_time: $this.find("input[name='closing_time']").val(),
+        location: $this.find("input[name='location']").val(),
     }
     $this.find("button:submit").attr('disabled', true);
     $this.find("button:submit").html('<span class="fas fa-spinner" data-fa-transform="shrink-3"></span>');
@@ -210,6 +233,10 @@
         vendor_type_id = response.type_id ;
         if(response.type !=  null){
             $checkType = response.type.feature_type 
+        }
+        if(response.location !== undefined){
+            $('div.location').css('display', 'block')
+            response.location === null ?  initMap()  :initMap(Number(JSON.parse(response.location).lat), Number(JSON.parse(response.location).long))
         }
     });
     $.get($("meta[name='BASE_URL']").attr("content") + "/admin/drivers/driver-info/" + $id, '',
@@ -426,7 +453,11 @@
             }, 500);
             })
         }else if($type == 'driver'){
-            $.get($("meta[name='BASE_URL']").attr("content") + "/admin/driver_status", '',
+            setTimeout(() => {
+               $('div.location').css('display', 'block')
+               driver_data.location === null ?  initMap() : initMap(Number(JSON.parse(driver_data.location).lat), Number(JSON.parse(driver_data.location).long))
+               $('input[name="location"]').val(driver_data.location)
+               $.get($("meta[name='BASE_URL']").attr("content") + "/admin/driver_status", '',
             function (response, status) {
                 response.forEach(element => {
                     if($lang == 'en'){
@@ -452,6 +483,7 @@
             
             function (response, status) {
             response.forEach(element => {
+                    
                     if($lang == 'en'){
                     if(driver_type_id == element.id){
                         option_en += `<option value="${element.id}" selected>${element.name.en}</option>`;
@@ -538,6 +570,8 @@
                      </div>
                      
                     `); 
+                    
+
                     setTimeout(() => {
                         $('#addition').append(`
                         <div class="form-group">
@@ -566,6 +600,7 @@
             .fail(function (response) {
                 http.fail(response.responseJSON, true);
             });
+           }, 1000);
         }else{
         $('#addition').html('');
         }

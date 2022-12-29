@@ -8,6 +8,11 @@ $('.topbar-item').on('click', function () {
         $('.offcanvas-overlay').remove();
     }, 1000);
 })
+function renameKey ( obj, oldKey, newKey ) {
+    obj[newKey] = obj[oldKey];
+    delete obj[oldKey];
+    return obj;
+}
 
 $( "#change-password" ).on('submit',function( event ) {
     event.preventDefault();

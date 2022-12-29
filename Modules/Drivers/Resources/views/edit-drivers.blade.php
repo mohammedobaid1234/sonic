@@ -81,7 +81,11 @@
             </div>
         </div>
     </div>
-    
+    <div class="form-group location" style="display: none">
+        <label class="col-sm-2 control-label">{{__('Location')}}</label>
+        <div class="col-sm-offset-2 col-sm-10" id="map" style="width:100%;margin:20px auto;height:300px"> </div>
+        <input name="location" value="{{$driver->location}}"  />
+    </div>
     <div class="form-group ">
         <div class="col-sm-offset-2 col-sm-10">
             <input id="btn-submit" value="{{__('Add')}}" type="submit" class="btn btn-primary" >
@@ -93,7 +97,31 @@
 @endsection
 @section('js')
 <script>$id = {{$driver->id}}</script>
-
+<script>$location = @json($driver->location)</script>
+<script>
+    function initMap(lat =31.469868, lng =  34.388081) {
+        console.log(document.getElementById("map"));
+         const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat:lat , lng: lng },
+         });
+        var marker = new google.maps.Marker({
+          position:{ lat:lat , lng: lng },
+          map: map,
+        });
+        map.addListener("click", (mapsMouseEvent) => {
+        marker.setPosition(mapsMouseEvent.latLng);
+        $('input[name="location"]').val(JSON.stringify(renameKey(mapsMouseEvent.latLng.toJSON(),'lng', 'long'), null, 2) );
+        });
+    }
+    window.initMap = initMap;
+</script>
+<script>
+    if($location !== undefined){
+    $('div.location').css('display', 'block')
+    $location === null ?  initMap()  :initMap(Number(JSON.parse($location).lat), Number(JSON.parse($location).long))
+}
+</script>
 <script>
     $("#btn-submit").on('click', function(event){
         event.preventDefault();
@@ -113,6 +141,8 @@
             province_id : $.trim($this.find("select[name='province_id']").val()),
             status_id : $.trim($this.find("select[name='status_id']").val()),
             address : $.trim($this.find("input[name='address']").val()),
+            location: $this.find("input[name='location']").val(),
+
         }
         $this.find("button:submit").attr('disabled', true);
         $this.find("button:submit").html('<span class="fas fa-spinner" data-fa-transform="shrink-3"></span>');

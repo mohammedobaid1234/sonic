@@ -92,18 +92,18 @@
 
     </div>
     <div class="feature" style="display: none">
-    <div class="form-group">
-        <label  class="col-sm-2 control-label" for="" >{{ __('Feature Type') }}</label>
-        <div class="col-sm-10">
-            <select name="types_of_features" id="types_of_features" class="form-control ">
-                <option value="">{{__("Choose Status...")}}</option>
-                @foreach ($types_of_features as $types_of_feature)
-                <option value="{{ $types_of_feature->id }}" >{{ $types_of_feature->name }}</option>
-                @endforeach
-            </select>
-            <p class="invalid-feedback"></p>
+        <div class="form-group">
+            <label  class="col-sm-2 control-label" for="" >{{ __('Feature Type') }}</label>
+            <div class="col-sm-10">
+                <select name="types_of_features" id="types_of_features" class="form-control ">
+                    <option value="">{{__("Choose Status...")}}</option>
+                    @foreach ($types_of_features as $types_of_feature)
+                    <option value="{{ $types_of_feature->id }}" >{{ $types_of_feature->name }}</option>
+                    @endforeach
+                </select>
+                <p class="invalid-feedback"></p>
+            </div>
         </div>
-    </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">{{__('Stated At')}}</label>
             <div class="col-sm-10">
@@ -118,15 +118,44 @@
             </div>
         </div>
     </div>
-
+    
+    <div class="form-group location" style="display: none">
+        <label class="col-sm-2 control-label">{{__('Location')}}</label>
+        <div class="col-sm-offset-2 col-sm-10" id="map" style="width:100%;margin:20px auto;height:300px"> </div>
+        <input name="location" value="${data.location}"  />
+    </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <input id="btn-submit"  value="{{__('Add')}}" type="submit" class="btn btn-primary" >
+            <input id="btn-submit" value="{{__('Add')}}" type="submit" class="btn btn-primary" >
         </div>
     </div>
 </form>
 @endsection
 @section('js')
+<script>
+    function initMap(lat =31.469868, lng =  34.388081) {
+        console.log(document.getElementById("map"));
+         const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat:lat , lng: lng },
+         });
+        var marker = new google.maps.Marker({
+          position:{ lat:lat , lng: lng },
+          map: map,
+        });
+        map.addListener("click", (mapsMouseEvent) => {
+        marker.setPosition(mapsMouseEvent.latLng);
+        renameKey(mapsMouseEvent.latLng.toJSON(),'lng', 'long')
+        // console.log(renameKey(mapsMouseEvent.latLng.toJSON(),'lng', 'long'));
+        // console.log(mapsMouseEvent.latLng.toJSON().forEach(element => {
+        //     renameKey(element,'lng', 'long')
+        // }));
+        $('input[name="location"]').val(JSON.stringify(renameKey(mapsMouseEvent.latLng.toJSON(),'lng', 'long'), null, 2) );
+        // $location =  JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+        });
+    }
+    window.initMap = initMap;
+</script>
 <script>$lang = "{{app()->getLocale()}}"</script>
 <script>
     $("#btn-submit").on('click', function(event){
@@ -192,7 +221,8 @@
              sub($id);
             
             if($id == 'driver'){
-
+            $('div.location').css('display', 'block')
+            initMap()
             $.get($("meta[name='BASE_URL']").attr("content") + "/admin/driver_status", '',
             function (response, status) {
                 response.forEach(element => {
@@ -325,6 +355,8 @@
             });
             
         }else if($id == 'vendor'){
+            $('div.location').css('display', 'block')
+            initMap()
            $('.feature').css('display', 'block');
             $.get($("meta[name='BASE_URL']").attr("content") + "/admin/vendor_status", '',
             function (response, status) {
@@ -456,6 +488,7 @@
                 http.fail(response.responseJSON, true);
             });
         }else{
+            $('div.location').css('display', 'none')
             $('#addition').html('');
 
         }
