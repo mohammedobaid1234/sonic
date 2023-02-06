@@ -30,7 +30,7 @@ class OrdersController extends Controller{
             $black_list = $black_list->toArray();
             // dd($black_list);
             $order = \Modules\Products\Entities\Orders::with('user')
-            ->where('last_status', null)
+            ->where('checkout_status', null)
             ->whereId($request->order_id)
             ->first();
             $orderLocation = json_decode($order->location);
@@ -82,7 +82,7 @@ class OrdersController extends Controller{
         try {
             
             $order = \Modules\Products\Entities\Orders::with('user')->where('buyer_id', $user->id)
-               ->where('last_status', null)
+               ->where('checkout_status', null)
                 ->first();
                 if(!$order){
                     return response()->json([
@@ -131,6 +131,8 @@ class OrdersController extends Controller{
                 $driverOrdersBuffering->save();
 
                 $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
+                $order->checkout_status = 1;
+                $order->save();
                 $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             \DB::commit();
         } catch (\Exception $e) {
@@ -504,7 +506,7 @@ class OrdersController extends Controller{
 
     public function checkOrder(){
         $user= auth()->guard('api')->user();
-        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('last_status', null)->first();
+        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('checkout_status', null)->first();
         return response()->json(['data'=>  $order ? $order->id : null] , $order ? 200 : 403);
     }
 }

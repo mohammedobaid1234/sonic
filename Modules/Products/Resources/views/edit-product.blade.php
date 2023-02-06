@@ -353,19 +353,19 @@
                 $('.js-example-basic-single').select2();
             });
     }
-    $("select[name='category_id']").on('change', function (e) {  
+    $("select[name='type_id']").on('change', function (e) {  
         $value = $(this).val();
         $('#attribute').text('');
         addChild($value)
     });
     $('button[data-action="addInput"]').on('click',function (e) {  
         e.preventDefault();
-        $value = $("select[name='category_id']").val()
+        $value = $("select[name='type_id']").val()
         addChild($value)
     })
     function addChild($value, $key1 = 0, $key2 = 0, value1 = 0 ,value2 = 0, element=''){
         setTimeout(() => {
-                console.log('object');
+                console.log($value);
             }, 1000);
         $.get($("meta[name='BASE_URL']").attr("content") + "/admin/category_attribute_types/category/" + $value, "",
             function (data, textStatus, jqXHR) {

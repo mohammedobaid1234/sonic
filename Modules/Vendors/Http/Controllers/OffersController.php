@@ -237,6 +237,8 @@ class OffersController extends Controller{
             if($coupon){
                 return response()->json(['message' => 'You can\'t Add Offer You have Avilable Coupons'],403);
             }
+            $request->type_id == '3' && !count($request->products_id) > 0  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->get()])  : '';
+
             $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request, $vendor){
                 $q->where('vn_offers.vendor_id', $vendor->id);
                 $q->whereIn('vn_offers_products.product_id', $request->products_id);
@@ -304,6 +306,7 @@ class OffersController extends Controller{
             if($coupon){
                 return response()->json(['message' => 'You can\'t Add Offer You have Avilable Coupons'],403);
             }
+            $request->type_id == '3' && !count($request->products_id) > 0  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->get()])  : '';
             $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request){
                 $q->where('vn_offers.vendor_id', $request->vendor_id);
                 $q->whereIn('vn_offers_products.product_id', $request->products_id);
@@ -332,6 +335,7 @@ class OffersController extends Controller{
             $offer->created_by  = \Auth::user()->id;
 
             $offer->save();
+            $request->type_id  == 3 ? '':'';
             foreach($request->products_id as $product_id){
                 $offer_products = new \Modules\Vendors\Entities\OfferProduct;
                 $offer_products->product_id = $product_id;
@@ -393,6 +397,8 @@ class OffersController extends Controller{
             $offer->created_by  = \Auth::user()->id;
 
             $offer->save();
+            $request->type_id == '3' && !count($request->products_id) > 0  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->get()])  : '';
+
             $offer_products =  \Modules\Vendors\Entities\OfferProduct::where('offer_id', $id)->delete();
             $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request,$offer, $vendor){
                 $q->where('vn_offers.vendor_id',  $vendor->id);
@@ -473,6 +479,7 @@ class OffersController extends Controller{
             $offer->created_by  = \Auth::user()->id;
 
             $offer->save();
+            $request->type_id == '3' && !count($request->products_id)  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->get()])  : '';
             $offer_products =  \Modules\Vendors\Entities\OfferProduct::where('offer_id', $id)->delete();
             $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request,$offer){
                 $q->where('vn_offers.vendor_id', $request->vendor_id);

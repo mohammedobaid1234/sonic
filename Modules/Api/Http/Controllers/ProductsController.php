@@ -18,7 +18,7 @@ class ProductsController extends Controller{
         
         $user = auth()->guard('api')->user();
         $order = \Modules\Products\Entities\Orders::with('order_details.product')
-        ->where('last_status', null)
+        ->where('checkout_status', null)
         ->where('buyer_id', $user->id)
         ->first();
         if(!$order){
@@ -88,7 +88,7 @@ class ProductsController extends Controller{
         $user = auth()->guard('api')->user();
 
         $order = \Modules\Products\Entities\Orders::with('user')->where('buyer_id', $user->id)
-        ->where('last_status', null)
+        ->where('checkout_status', null)
         ->first();
         if(!$order){
             return response()->json([
@@ -225,7 +225,7 @@ class ProductsController extends Controller{
             'variation_id' => 'required',
         ]);
         $order = \Modules\Products\Entities\Orders::with('order_details.product')
-        ->where('last_status', null)
+        ->where('checkout_status', null)
         ->where('buyer_id', $user->id)
         ->first();
         if(!$order){
@@ -323,7 +323,7 @@ class ProductsController extends Controller{
             $order_details->total = $order_details->price * $order_details->quantity;
             $order_details->save();
             $order = \Modules\Products\Entities\Orders::with('order_details.product')
-            ->where('last_status', null)
+            ->where('checkout_status', null)
             ->where('buyer_id', $user->id)
             ->first();
             $order->total = $order->order_details->sum('total');
@@ -348,7 +348,7 @@ class ProductsController extends Controller{
             'location' => 'required'
         ]);
         $user = auth()->guard('api')->user();
-        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('last_status',  null)->first();
+        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('checkout_status',  null)->first();
         if($order){
             return response()->json([
                 'message' => 'Please Finish This Exist Order and make checkout before open new Order'
@@ -521,7 +521,7 @@ class ProductsController extends Controller{
             $order_details =  collect([]);
             $vendor_details =  collect([]);
             $order = \Modules\Products\Entities\Orders::with('order_details.product')
-            ->where('last_status', null)
+            ->where('checkout_status', null)
             ->where('buyer_id', $user->id)
             ->first();
             if(!$order){

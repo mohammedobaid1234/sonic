@@ -219,7 +219,6 @@
                         </div>
                     `);
                 }else{
-                    console.log('object');
                     $('.vendor-name').append(`
                     <label  class="col-sm-2 control-label" for="" >نوع المورد</label>
                         <div class="col-sm-10">
@@ -336,10 +335,12 @@
     })
     $('button[data-action="addInput"]').on('click',function (e) {
         e.preventDefault();
-        $value = $("select[name='type_id']").val();
+        $value = $("select[name='type_id']['#type_id']").val();
         addChild($value)
     })
     function addChild($value){
+        console.log($value);
+
         $.get($("meta[name='BASE_URL']").attr("content") + "/admin/category_attribute_types/category/" + $value, "",
             function (data, textStatus, jqXHR) {
                 attributes_en = '';

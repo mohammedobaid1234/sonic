@@ -672,7 +672,7 @@ class VendorAppController extends Controller{
             return response()->json(['message' => 'Not allow'],403 );
         }
         $productsCount = \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->count();
-        $ordersCount = \Modules\Products\Entities\Orders::where('seller_id', $vendor->id)->where('last_status', '<>', null)->count();
+        $ordersCount = \Modules\Products\Entities\Orders::where('seller_id', $vendor->id)->where('checkout_status', '<>', null)->count();
         $rating = \Modules\Users\Entities\Rate::where('rateable_id',$vendor->id )
         ->where('rateable_type','Modules\Vendors\Entities\Vendors')->get(['rating']);
         $percentageOfRating =intval($rating->sum('rating') / $rating->count()) ;
