@@ -427,7 +427,7 @@ class OffersController extends Controller{
     public function update(Request $request, $id){
         \Auth::user()->authorize('vendors_module_offer_update');
         $request->validate([
-            'products_id' => 'required',
+            // 'products_id' => 'required',
             'name_en' => 'required',
             'name_ar' => 'required',
             'description_en' => 'required',
@@ -438,14 +438,14 @@ class OffersController extends Controller{
             'type_id' => 'required',
             // 'products_id' => 'required',
         ]);
-
         \DB::beginTransaction();
         try {
             // $coupon = \Modules\Vendors\Entities\Coupon::where('vendor_id', $request->vendor_id)->first();
             // if($coupon){
             //     return response()->json(['message' => 'You can\'t Add Offer You have Avilable Coupons'],403);
             // }
-            $productsArrayCount =count($request->products_id);
+            !isset($request->products_id) ? $request->products_id = [] :'';
+            $productsArrayCount = count($request->products_id);
             if($request->type_id == '3' && $productsArrayCount == 0 &&$request->amount == null){
                 return response()->json(['message' => 'That Should Add Amount To Free Shipping Offer'],403);
             }
@@ -479,18 +479,18 @@ class OffersController extends Controller{
             $offer->created_by  = \Auth::user()->id;
 
             $offer->save();
-            $request->type_id == '3' && !count($request->products_id)  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->get()])  : '';
+            $request->type_id == '3' && !count($request->products_id)  ? $request->merge(['products_id' => \Modules\Products\Entities\Product::where('vendor_id', $request->vendor_id)->pluck('id')])  : '';
             $offer_products =  \Modules\Vendors\Entities\OfferProduct::where('offer_id', $id)->delete();
             $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request,$offer){
                 $q->where('vn_offers.vendor_id', $request->vendor_id);
-                $q->whereIn('vn_offers_products.product_id', $request->products_id);
+                $q->whereIn('vn_offers_products.product_id', $request['products_id']);
                 $q->where('id', '<>', $offer->id);
             })
             ->get();
             if(count($offerAvilable) > 0){
                 return response()->json(['message' => 'You Can\'t Add  Product Exsist In Another Order'],403); 
             }
-            foreach($request->products_id as $product_id){
+            foreach($request['products_id'] as $product_id){
                 $offer_products = new \Modules\Vendors\Entities\OfferProduct;
                 $offer_products->product_id = $product_id;
                 $offer_products->offer_id = $offer->id;

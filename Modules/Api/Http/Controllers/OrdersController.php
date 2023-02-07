@@ -443,20 +443,21 @@ class OrdersController extends Controller{
     }
     public function applyOffer(Request $request){
         $request->validate([
-            'order_id' => 'required',
             'offer_id' =>'required',
         ]);
         \DB::beginTransaction();
         try {
             $user = auth()->guard('api')->user();
+            
             $offer = \Modules\Vendors\Entities\Offer::where('id', $request->offer_id)->first();
             if(!$offer){
                 return response()->json([
                     'message' => 'Not Found Offer'
                 ],403);
             }
-            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
-            ->where('buyer_id', $user->id)
+            $order = \Modules\Products\Entities\Orders::
+            where('buyer_id', $user->id)
+            ->where('checkout_status', null)
             ->first();
             if(!$order){
                 return response()->json([
@@ -489,17 +490,25 @@ class OrdersController extends Controller{
                     ],403);
                 }
             }
-            return $offer->offer_product;
-            // if()
-            
+            $productsNotInOffer = array_diff($order->order_details()->pluck('product_id')->toArray(),$offer->offer_product()->pluck('product_id')->toArray());
+            if(count($productsNotInOffer) > 0){
+                $message = 'Sorry You have products not in offer you can just beneficiary just on products in offer ' . " \n "  . 
+                'The products out of our offer it '.  " \n ";
+                foreach(array_unique($productsNotInOffer) as $product){
+                    $productOut = \Modules\Products\Entities\Product::whereId($product)->first();
+                    $message .= $productOut->getTranslation('name', \App::getLocale()) ." \n ";
+                }
+                return response()->json([
+                    'message' =>$message 
+                ],403);
+            }
             $orderUser = new \Modules\Users\Entities\UserOffer();
             $orderUser->user_id  = $user->id;
             $orderUser->order_id   = $request->order_id;
             $orderUser->offer_id   = $offer->id;
-            $orderUser->value   = $offer->value;
             $orderUser->save();
             $order_total = $order->total;
-            $order->after_discount = $order_total - ( $orderUser->value);
+            $offer->value? $order->after_discount = $order_total - ( $order_total * $orderUser->value) : null;
             $order->save();
             \DB::commit();
         } catch (\Exception $e) {
@@ -508,7 +517,7 @@ class OrdersController extends Controller{
             return response()->json(['message' => $e->getMessage()], 403);
         }
 
-        return response()->json(['message' => 'Your Coupon Was Applied']);
+        return response()->json(['message' => 'Your Offer Was Applied']);
     }
 
     public function offersForUser(Request $request){

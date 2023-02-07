@@ -387,17 +387,21 @@ class ProductsController extends Controller{
        $offer = \Modules\Vendors\Entities\Offer::with('offer_product.product','type')->whereId($id)->first();
        $vendor = \Modules\Vendors\Entities\Vendors::whereId($offer->vendor_id)->first();
        $vendorLocation = json_decode($vendor->location);
-       $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->first();
+       $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
+       ->where('checkout_status',  null)
+       ->first();
        $orderLocation = json_decode($order->location);
        $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
        $productsList = collect([]);
-    //    return $offer;
+        //    return $offer;
        $vendor = \Modules\Vendors\Entities\Vendors::with('user')->where('id', $offer->vendor_id)->first();
        if(!$vendor){
         return response()->json([
             'message' => 'This Vendor id Deactivate'
         ],403);
         }
+        $productsNotInOffer = count(array_diff($order->order_details()->pluck('product_id')->toArray(),$offer->offer_product()->pluck('product_id')->toArray())) >0 ? false : true;
+        return $productsNotInOffer;
        if($offer->offer_product){
             foreach($offer->offer_product as $product) {
                 $spesficProduct = $product->product;
@@ -426,6 +430,7 @@ class ProductsController extends Controller{
                 ]);
             }
        }
+       
        return response()->json([
         'data' => $productsList
        ]);

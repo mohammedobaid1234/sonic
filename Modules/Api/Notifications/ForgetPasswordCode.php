@@ -25,7 +25,7 @@ class ForgetPasswordCode extends Notification{
     public function toMail($notifiable){
         return (new MailMessage)
                 ->subject('Verification Code')
-                ->from('camel_express_support@localhost', 'Campel Express Support')
+                ->from('sonic_support@localhost', 'Sonic Support')
                 ->line('Hi ' . $this->user->full_name . ' Your Verification code is ' . $this->code)
                 ->line('Thank you for using our application!');
     }

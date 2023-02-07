@@ -164,7 +164,7 @@ class JWTController extends Controller{
             if(!$user){
                 return response()->json([
                     'message' => 'This User Not Exisit Please Register'
-                ]);
+                ],403);
             }
         }
         if($request->mobile_no){
@@ -209,7 +209,7 @@ class JWTController extends Controller{
         }
         return response()->json([
             'message' => 'Some Thing is Error'
-        ]);
+        ],403);
     }
     public function checkCode(Request $request){
         $request->validate([
