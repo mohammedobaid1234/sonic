@@ -61,10 +61,8 @@ class JWTController extends Controller{
             'username' => 'required|string|min:2|max:100',
             'email' => 'required',
             'password' => 'required|string',
-            'confirm_password' => 'required|same:password',
+            // 'confirm_password' => 'required|same:password',
             'mobile_no' => 'required|string',
-            'country_id' => 'required',
-            'city_id' => 'required',
         ]);
         if($request->type == 3){
             $request->validate([

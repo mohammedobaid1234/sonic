@@ -49,6 +49,7 @@ Route::group(['middleware' => 'api'], function($router) {
     Route::post('/make-order','ProductsController@makeOrder');
     Route::get('categories','ProductsController@categories');
     Route::post('apply-coupon','OrdersController@applyCoupon');
+    Route::post('apply-offer','OrdersController@applyOffer');
     Route::post('checkout','OrdersController@checkout');
     Route::post('driver-accept-or-reject-order','OrdersController@DriverAcceptORRejectOrder');
     Route::post('order-states','OrdersController@OrderStates');

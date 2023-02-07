@@ -441,6 +441,75 @@ class OrdersController extends Controller{
 
         return response()->json(['message' => 'Your Coupon Was Applied']);
     }
+    public function applyOffer(Request $request){
+        $request->validate([
+            'order_id' => 'required',
+            'offer_id' =>'required',
+        ]);
+        \DB::beginTransaction();
+        try {
+            $user = auth()->guard('api')->user();
+            $offer = \Modules\Vendors\Entities\Offer::where('id', $request->offer_id)->first();
+            if(!$offer){
+                return response()->json([
+                    'message' => 'Not Found Offer'
+                ],403);
+            }
+            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
+            ->where('buyer_id', $user->id)
+            ->first();
+            if(!$order){
+                return response()->json([
+                    'message' => 'Not Allowed'
+                ],403);
+            }
+            $orderUser = \Modules\Users\Entities\UserCoupon::where('order_id', $request->order_id)->first();
+            if($orderUser){
+                return response()->json([
+                    'message' => 'Not Allowed You Beneficiary of a coupon and offer on the same order '
+                ],403);
+            }
+            $offerUser = \Modules\Users\Entities\UserOffer::where('order_id', $request->order_id)->where('user_id', $user->id)->first();
+            if($offerUser){
+                return response()->json([
+                    'message' => 'Not Allowed You Beneficiary of a another offer on the same order '
+                ],403);
+            }
+            if($order->seller_id != $offer->vendor_id){
+                return response()->json([
+                    'message' => 'Not Allowed'
+                ],403);
+            }
+
+            
+            if($order->amount !== 0){
+                if($order->total < $offer->amount ){
+                    return response()->json([
+                        'message' => 'Not Allowed Your total must be over: ' . $offer->amount 
+                    ],403);
+                }
+            }
+            return $offer->offer_product;
+            // if()
+            
+            $orderUser = new \Modules\Users\Entities\UserOffer();
+            $orderUser->user_id  = $user->id;
+            $orderUser->order_id   = $request->order_id;
+            $orderUser->offer_id   = $offer->id;
+            $orderUser->value   = $offer->value;
+            $orderUser->save();
+            $order_total = $order->total;
+            $order->after_discount = $order_total - ( $orderUser->value);
+            $order->save();
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 403);
+        }
+
+        return response()->json(['message' => 'Your Coupon Was Applied']);
+    }
 
     public function offersForUser(Request $request){
         $request->validate([
