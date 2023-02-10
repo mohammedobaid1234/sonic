@@ -121,9 +121,7 @@ class JWTController extends Controller{
         }
         $user->setAttribute('token', $this->respondWithToken($token));
         return response()->json([
-            'data' => [
-                'user'=> $user,
-            ]
+            'data' =>$user,
         ], 201);
        
     }
@@ -153,9 +151,7 @@ class JWTController extends Controller{
         $user = \Modules\Users\Entities\User::where('mobile_no', $request->mobile_no)->first();
         $user->setAttribute('token', $this->respondWithToken($token));
         return response()->json([
-            'data' => [
-                'user'=> $user,
-            ]
+            'data' =>$user,
         ], 201);
     }
     public function sendCode(Request $request){
