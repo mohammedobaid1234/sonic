@@ -119,12 +119,13 @@ class JWTController extends Controller{
             \DB::rollback();
             return response()->json(['message' => $e->getMessage()], 403);
         }
+        $user->setAttribute('token', $this->respondWithToken($token));
         return response()->json([
             'data' => [
                 'user'=> $user,
-                'token' => $this->respondWithToken($token)
             ]
         ], 201);
+       
     }
 
     public function login(Request $request){
@@ -150,10 +151,10 @@ class JWTController extends Controller{
             return response()->json(['message' => 'Your Password Or Email Not Correct'], 403);
         }
         $user = \Modules\Users\Entities\User::where('mobile_no', $request->mobile_no)->first();
+        $user->setAttribute('token', $this->respondWithToken($token));
         return response()->json([
             'data' => [
                 'user'=> $user,
-                'token' => $this->respondWithToken($token)
             ]
         ], 201);
     }
@@ -293,22 +294,18 @@ class JWTController extends Controller{
 
         return response()->json(['message' => 'User successfully logged out.']);
     }
-
     public function refresh(){
         return $this->respondWithToken(auth()->guard('api')->refresh());
     }
-
     public function profile(){
         return response()->json(auth()->guard('api')->user());
     }
-
- 
     protected function respondWithToken($token){
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            // 'expires_in' => auth()->guard('api')->factory()->getTTL() * 60
-        ]);
+        return $token;
+        // return response()->json([
+        //     'token_type' => 'bearer',
+        //     // 'expires_in' => auth()->guard('api')->factory()->getTTL() * 60
+        // ]);
     }
 
 }
