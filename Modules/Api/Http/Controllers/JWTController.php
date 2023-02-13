@@ -155,6 +155,8 @@ class JWTController extends Controller{
         ], 201);
     }
     public function sendCode(Request $request){
+        \DB::beginTransaction();
+        try {
         $code = rand(1111, 9999);
         if($request->email){
             $user = \Modules\Users\Entities\User::where('email', $request->email)->first();
@@ -167,17 +169,18 @@ class JWTController extends Controller{
         if($request->mobile_no){
             $user = \Modules\Users\Entities\User::where('mobile_no', $request->mobile_no)->first();
             if(!$user){
-            return response()->json([
-                'message' => 'This User Not Exisit Please Register'
-            ]);
+                return response()->json([
+                    'message' => 'This User Not Exisit Please Register'
+                ]);
+            }
+            $otp = new \Modules\Users\Entities\Otp;
+            $otp->mobile_no = $request->mobile_no;
+            $otp->code = $code;
+            $otp->user_id  = $user->id;
+            $otp->message = 'Your Verification Code is: ' .$code;
+            $otp->save();
+            $user->notify(new \Modules\Api\Notifications\ForgetPasswordViaPhoneNumber($user,$code));
         }
-        }
-        $otp = new \Modules\Users\Entities\Otp;
-        $otp->mobile_no = $request->mobile_no;
-        $otp->code = $code;
-        $otp->user_id  = $user->id;
-        $otp->message = 'Your Verification Code is: ' .$code;
-        $otp->save();
 
         if($request->email){
             $user->notify(new \Modules\Api\Notifications\ForgetPasswordCode($user, $code));
@@ -187,26 +190,33 @@ class JWTController extends Controller{
             $otp->user_id  = $user->id;
             $otp->message = 'Your Verification Code is: ' .$code;
             $otp->save();
-            return response()->json([
-                'message' => 'send Code',
-                'user_id' => $user->id
-            ]);
+            // return response()->json([
+            //     'message' => 'send Code',
+            //     'user_id' => $user->id
+            // ]);
         }
-        if($request->mobile_no){
-            $otp = new \Modules\Users\Entities\Otp;
-            $otp->mobile_no = $request->mobile_no;
-            $otp->code = $code;
-            $otp->user_id  = $user->id;
-            $otp->message = 'Your Verification Code is: ' .$code;
-            $otp->save();
-            return response()->json([
-                'message' => 'send Code',
-                'user_id' => $user->id
-            ]);
+        // if($request->mobile_no){
+        //     $otp = new \Modules\Users\Entities\Otp;
+        //     $otp->mobile_no = $request->mobile_no;
+        //     $otp->code = $code;
+        //     $otp->user_id  = $user->id;
+        //     $otp->message = 'Your Verification Code is: ' .$code;
+        //     $otp->save();
+        //     return response()->json([
+        //         'message' => 'send Code',
+        //         'user_id' => $user->id
+        //     ]);
+        // }
+        \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 403);
         }
         return response()->json([
-            'message' => 'Some Thing is Error'
-        ],403);
+            'message' => 'send Code',
+            'user_id' => $user->id
+        ],200);
     }
     public function checkCode(Request $request){
         $request->validate([

@@ -134,4 +134,8 @@ class User extends Authenticatable implements JWTSubject, HasMedia{
     public function vendor(){
         return $this->hasOne(\Modules\Vendors\Entities\Vendors::class);
     }
+
+    public function routeNotificationForTwilio(){
+        return '+970594034429';
+    }
 }

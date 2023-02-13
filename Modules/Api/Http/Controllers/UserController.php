@@ -134,6 +134,7 @@ class UserController extends Controller{
        
        $addressBook = collect([]);
        $lang = app()->getLocale();
+    //    return 
       foreach ($user->address_book as $address_book) {
         $addressBook->push([
             'id' => $address_book->id,
