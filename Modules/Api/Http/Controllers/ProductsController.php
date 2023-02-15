@@ -97,7 +97,7 @@ class ProductsController extends Controller{
         }
         $orderLocation =json_decode($order->location);
         $product= \Modules\Products\Entities\Product::whereId($id)->first();
-        $vendor = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->first();
+        $vendor = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
         $vendorLocation =json_decode($vendor->location);
         $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
         $attributesList = collect([]);
@@ -195,7 +195,7 @@ class ProductsController extends Controller{
         $products =  $query->get();
         $data = collect([]);
         foreach($products as $product){
-        $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->first();
+        $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
         $vendorLocation =json_decode($vendorForDistance->location);
         $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
         //   $distance =  $this->spesficVendorDistance($orderLocation->lat, $orderLocation->long,$product->vendor_id);
@@ -345,13 +345,21 @@ class ProductsController extends Controller{
     }
     public function makeOrder(Request $request){
         $request->validate([
-            'location' => 'required'
+            'addressbook' => 'required'
         ]);
         $user = auth()->guard('api')->user();
+       
+
         $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('checkout_status',  null)->first();
         if($order){
             return response()->json([
                 'message' => 'Please Finish This Exist Order and make checkout before open new Order'
+            ],403);
+        }
+        $address_book =  $user->address_book()->whereId($request->addressbook)->first();
+        if(!$address_book){
+            return response()->json([
+                'message' => 'address book not found' 
             ],403);
         }
         // $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
@@ -362,17 +370,17 @@ class ProductsController extends Controller{
         //     ],403);
         // }
         if($request->vendor_id){
-            $vendor = \Modules\Vendors\Entities\Vendors::whereId($request->vendor_id)->first();
+            $vendor = \Modules\Vendors\Entities\Vendors::whereId($request->vendor_id)->active()->first();
             if(!$vendor){
                 return response()->json([
-                    'message' => 'This Vendor Not Exsist'
+                    'message' => 'This Vendor Not Active'
                 ],403);
             }
         }
         $order = new  \Modules\Products\Entities\Orders;
         // $order->seller_id = $request->vendor_id ;
         $order->buyer_id  = $user->id  ;
-        $order->location  = $request->location  ;
+        $order->location  = $address_book->location  ;
         $order->save();
         return response()->json([
             'message' => 'Order Created Successfully',
@@ -385,7 +393,12 @@ class ProductsController extends Controller{
        
         $user = auth()->guard('api')->user();
        $offer = \Modules\Vendors\Entities\Offer::with('offer_product.product','type')->whereId($id)->first();
-       $vendor = \Modules\Vendors\Entities\Vendors::whereId($offer->vendor_id)->first();
+       $vendor = \Modules\Vendors\Entities\Vendors::with('user')->whereId($offer->vendor_id)->first();
+       if(!$vendor){
+        return response()->json([
+            'message' => 'This Vendor no active'
+        ],403);
+        }
        $vendorLocation = json_decode($vendor->location);
        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
        ->where('checkout_status',  null)
@@ -394,12 +407,6 @@ class ProductsController extends Controller{
        $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
        $productsList = collect([]);
         //    return $offer;
-       $vendor = \Modules\Vendors\Entities\Vendors::with('user')->where('id', $offer->vendor_id)->first();
-       if(!$vendor){
-        return response()->json([
-            'message' => 'This Vendor id Deactivate'
-        ],403);
-        }
         $productsNotInOffer = count(array_diff($order->order_details()->pluck('product_id')->toArray(),$offer->offer_product()->pluck('product_id')->toArray())) >0 ? false : true;
         return $productsNotInOffer;
        if($offer->offer_product){
@@ -493,7 +500,7 @@ class ProductsController extends Controller{
        $product_list_favorites =  collect([]);
        foreach ($favorites as $products) {
         $product = $products->product;
-        $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->first();
+        $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
         $vendorLocation =json_decode($vendorForDistance->location);
         $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
         $variationAttribute =  \Modules\Products\Entities\VariationAttribute::with('variation')->where('type_id', '1')
@@ -562,6 +569,7 @@ class ProductsController extends Controller{
         'total' => $order->total,
         'after_discount' => $order->after_discount,
         'order_details' =>  $products_in_order,
+        'can_checkout' => $vendor->status_id == 1 ? true : false,
         ]);
        return response()->json([
          'data' => $order_details
@@ -587,11 +595,11 @@ class ProductsController extends Controller{
             'attributes' => 'required'
        ]);
        $product = \Modules\Products\Entities\Product::whereId($request->product_id)->first();
-    //   if(!$product){
-    //     return response()->json([
-    //         'message' =>  'Not Found'
-    //         ]);
-    //   }
+        //   if(!$product){
+        //     return response()->json([
+        //         'message' =>  'Not Found'
+        //         ]);
+        //   }
         $attributes = json_decode($request['attributes']);
        $count = 0;
        if($attributes->value1){
@@ -600,55 +608,55 @@ class ProductsController extends Controller{
        if($attributes->value2){
         $count++;
        }
-    $variationProduct = \Modules\Products\Entities\ProductVariation::with('attributes')
-    ->where('product_id', $request->product_id)
-    ->whereHas('attributes', function($q)use($attributes){
-        if($attributes->value1){
-            $q->where('type_id', $attributes->type_id1)
-            ->where('value',  $attributes->value1);
-        }
-      
-    })
-    ->whereHas('attributes', function($q)use($attributes){
-        if($attributes->value2){
-            $q->where('type_id', $attributes->type_id2)
-            ->where('value',  $attributes->value2);
-        }
+        $variationProduct = \Modules\Products\Entities\ProductVariation::with('attributes')
+        ->where('product_id', $request->product_id)
+        ->whereHas('attributes', function($q)use($attributes){
+            if($attributes->value1){
+                $q->where('type_id', $attributes->type_id1)
+                ->where('value',  $attributes->value1);
+            }
         
-    })
-    ->get();
-    $product = collect([]);
-    foreach ($variationProduct as $variation) {
-        $typesIdes = collect([]);
-        $attributes = $variation->attributes;
-        foreach($attributes as $attribute){
+        })
+        ->whereHas('attributes', function($q)use($attributes){
+            if($attributes->value2){
+                $q->where('type_id', $attributes->type_id2)
+                ->where('value',  $attributes->value2);
+            }
+            
+        })
+        ->get();
+        $product = collect([]);
+        foreach ($variationProduct as $variation) {
+            $typesIdes = collect([]);
+            $attributes = $variation->attributes;
+            foreach($attributes as $attribute){
 
-            $typesIdes->push($attribute->type_id);
+                $typesIdes->push($attribute->type_id);
+            }
+            if(count($typesIdes)  == $count ){
+            if($variation->quantity > 0 || $variation->quantity === null){
+                $product->push($variation);
+            }
+            }
+            
         }
-        if(count($typesIdes)  == $count ){
-           if($variation->quantity > 0 || $variation->quantity === null){
-            $product->push($variation);
-           }
+        if(count($product) > 1){
+            return response()->json([
+                'message' =>  'please make allocate more'
+            ],403);
         }
-        
-    }
-    if(count($product) > 1){
+        if(count($product) == 0){
+            return response()->json([
+                'message' =>  'Not Avilable'
+            ],403);
+        }
         return response()->json([
-            'message' =>  'please make allocate more'
-        ],403);
-    }
-    if(count($product) == 0){
-        return response()->json([
-            'message' =>  'Not Avilable'
-        ],403);
-    }
-    return response()->json([
-        'data' =>  [
-            'product_id' => $product[0]->product_id,
-            'variation_id' => $product[0]->id,
-            'price' => $product[0]->price
-        ]
-    ]);
+            'data' =>  [
+                'product_id' => $product[0]->product_id,
+                'variation_id' => $product[0]->id,
+                'price' => $product[0]->price
+            ]
+        ]);
 
     }
   

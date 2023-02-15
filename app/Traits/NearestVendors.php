@@ -17,6 +17,7 @@ trait NearestVendors{
 
             ->orderBy("distance",'asc')
             ->where('type_id', $type)
+            ->active()
             ->offset(0)
             ->limit(20)
             ->whereHas('type', function ($q) use($feature){
@@ -42,6 +43,7 @@ trait NearestVendors{
 
             // ->having("distance", "<", $radius)
             ->orderBy("distance",'asc')
+            ->active()
             ->where('type_id', $type)
             // ->whereHas('user', function($q)use($province_id){
             //   $q->where('um_users.province_id', $province_id);
@@ -71,6 +73,7 @@ trait NearestVendors{
             ->where('type_id', $type)
             ->offset(0)
             ->limit(20)
+            ->active()
             ->get();
           $finalData = collect([]);
           foreach ($data as $d) {
@@ -126,6 +129,7 @@ trait NearestVendors{
             ->where('id', $vendor_id)
             ->offset(0)
             ->limit(20)
+            ->active()
             ->first();
             return $data;
             if($data->maximum_distance > $data->distance){
@@ -144,6 +148,7 @@ trait NearestVendors{
             // ->having("distance", "<", $radius)
             ->orderBy("distance",'asc')
             ->offset(0)
+            ->active()
             ->limit(20)
             ->get();
             $finalData = collect([]);
@@ -165,6 +170,7 @@ trait NearestVendors{
 
       ->where('id', $vendor_id)
       ->offset(0)
+      ->active()
       ->limit(20)
       ->first();
       $finalData = collect([]);

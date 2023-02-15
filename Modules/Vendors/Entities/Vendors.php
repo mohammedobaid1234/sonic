@@ -19,6 +19,11 @@ class Vendors extends Model implements HasMedia{
         parent::boot();
         static::addGlobalScope(new \App\Scopes\ActiveScope);
     }
+    public function scopeActive($query){
+        return $query->where(function($query){
+           $query->where('status_id', 1);
+        });
+    }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{
         $this->addMediaConversion('thumb')
               ->width(400)

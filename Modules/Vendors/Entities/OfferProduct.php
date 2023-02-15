@@ -15,6 +15,7 @@ class OfferProduct extends Model{
         parent::boot();
         static::addGlobalScope(new \App\Scopes\OrderDetailsActiveProductsScope);
     }
+    
     public function product(){
         return $this->belongsTo(\Modules\Products\Entities\Product::class);
     }

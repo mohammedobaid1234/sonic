@@ -97,7 +97,7 @@ class OrdersController extends Controller{
                 ->get(['driver_id']);
                 $black_list = $black_list->toArray();
                 $orderLocation = json_decode($order->location);
-                $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->first();
+                $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->->active()->first();
                 if(!$vendor){
                     return response()->json([
                         'message' => 'This vendor is  deactivate'
@@ -188,7 +188,7 @@ class OrdersController extends Controller{
             }
             $driverOrdersBuffering->delete();
 
-            $vendor = \Modules\Vendors\Entities\Vendors::whereId($order->seller_id)->first();
+            $vendor = \Modules\Vendors\Entities\Vendors::whereId($order->seller_id)->active()->first();
             // $vendor = \Modules\Users\Entities\User::whereId($vendor->user_id)->first();
             // $vendor->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             if($request->flag == '1'){

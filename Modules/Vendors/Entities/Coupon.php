@@ -18,6 +18,16 @@ class Coupon extends Model{
         static::addGlobalScope(new \App\Scopes\ActiveStatusNoIdScope);
         static::addGlobalScope(new \App\Scopes\AdminActiveScope);
     }
+    public function scopeActive($query){
+        return $query->where(function($query){
+           $query->where('status', 1);
+        });
+    }
+    public function scopeAdminActive($query){
+        return $query->where(function($query){
+           $query->where('admin_status', 1);
+        });
+    }
     public function created_by_user(){
         return $this->belongsTo(\Modules\Users\Entities\User::class, 'created_by');
     }

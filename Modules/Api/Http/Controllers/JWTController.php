@@ -18,7 +18,7 @@ class JWTController extends Controller{
         'login', 'register',
         'registerPage','sendCode','checkCode' ,'changePassword'
         ]
-    ]);
+     ]);
     }
     public function index(){
         $links = \Modules\CMS\Entities\SocialMediaLink::get();

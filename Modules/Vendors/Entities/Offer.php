@@ -25,6 +25,16 @@ class Offer extends Model implements HasMedia{
         static::addGlobalScope(new \App\Scopes\AdminActiveScope);
 
     }
+    public function scopeActive($query){
+        return $query->where(function($query){
+           $query->where('status_id', 1);
+        });
+    }
+    public function scopeAdminActive($query){
+        return $query->where(function($query){
+           $query->where('admin_status', 1);
+        });
+    }
     public function admin_status(){
         return $this->belongsTo(\Modules\Users\Entities\AdminStatusForVendorActivity::class,'admin_status');
     }
