@@ -61,7 +61,8 @@ class OrdersController extends Controller{
             $driverORderStates->status_id  = '3'; 
             $driverORderStates->time  = date('H:i:s');
             $driverORderStates->save();
-            
+            $order->order_driver_reach_time = now();
+            $order->save();
             $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
             $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             $vendor->notify(new \Modules\Vendors\Notifications\NotifyVendorOfNewOrder($order));
@@ -74,6 +75,17 @@ class OrdersController extends Controller{
         }
 
         return response()->json(['message' => 'Order was checked']);
+    }
+    public static function dispatchOrderToNewDriver(){
+        return now()->format('H:s:i');
+        $orders = \Modules\Products\Entities\Orders::
+        where('last_status' , null)
+        ->where('checkout_status', 1)
+        ->whereDate('dispatchOrderToNewDriver', '>=', now()-60)
+        ->get();
+        $created_at =$orders[0]->created_at;
+        $created_at_seconds =  Carbon::parse($created_at)->format('U');
+        return  Carbon::createFromTimestamp($created_at_seconds)->format('H:s:i');
     }
     public function checkout(Request $request){
        
@@ -97,7 +109,7 @@ class OrdersController extends Controller{
                 ->get(['driver_id']);
                 $black_list = $black_list->toArray();
                 $orderLocation = json_decode($order->location);
-                $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->->active()->first();
+                $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->active()->first();
                 if(!$vendor){
                     return response()->json([
                         'message' => 'This vendor is  deactivate'
@@ -132,6 +144,7 @@ class OrdersController extends Controller{
 
                 $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
                 $order->checkout_status = 1;
+                $order->order_driver_reach_time = now();
                 $order->save();
                 $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             \DB::commit();

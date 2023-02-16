@@ -147,11 +147,12 @@ class ProductsController extends Controller{
         ]);
     }
     public function filterSearch(Request $request){
-        $request->validate([
-          'order_id' => 'required'
-        ]);
+        // $request->validate([
+        //   'order_id' => 'required'
+        // ]);
+
         $user = auth()->guard('api')->user();
-        $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->where('buyer_id', $user->id)->first();
+        $order = \Modules\Products\Entities\Orders::where('checkout_status' , null)->where('buyer_id', $user->id)->first();
         if(!$order){
             return response()->json([
                 'message' => 'Make order'

@@ -68,6 +68,7 @@ Route::group(['middleware' => 'api'], function($router) {
     Route::post('get-price','ProductsController@getPrice');
     Route::get('notification','UserController@notification');
     Route::get('check-order','OrdersController@checkOrder');
+    Route::get('dispatchOrderToNewDriver','OrdersController@dispatchOrderToNewDriver');
     // Route::post('make-notification', function () {
     //     $user = auth()->guard('api')->user();
     //     // https://api.opencagedata.com/geocode/v1/json?q=31.54248%2C34.45228&key=6b85e2270825413a95e7ee5916383fb3&language=en&pretty=1
