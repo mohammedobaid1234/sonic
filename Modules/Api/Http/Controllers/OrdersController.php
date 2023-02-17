@@ -22,15 +22,14 @@ class OrdersController extends Controller{
         \DB::beginTransaction();
         try {
             $black_list = \Modules\Products\Entities\OrderState::where('order_id', $request->order_id)
-            ->whereHas('driver', function($q){
-                $q->where('status_id', '2');
-            })
+            // ->whereHas('driver', function($q){
+            //     $q->where('status_id', '2');
+            // })
             ->where('status_id' ,'5')
             ->get('driver_id');
             $black_list = $black_list->toArray();
-            // dd($black_list);
             $order = \Modules\Products\Entities\Orders::with('user')
-            ->where('checkout_status', null)
+            ->where('checkout_status', 1)
             ->whereId($request->order_id)
             ->first();
             $orderLocation = json_decode($order->location);
@@ -38,6 +37,7 @@ class OrdersController extends Controller{
             if(!$vendor){
                 return response()->json(['message' => 'Vendor is deactivate']);
             }
+            
            
             $vendorLocation = json_decode($vendor->location);
             $distance = $this->distanceBetweenTwoPoints($vendorLocation->lat,$vendorLocation->long , $orderLocation->lat, $orderLocation->long);
@@ -49,7 +49,6 @@ class OrdersController extends Controller{
             $orderState->driver_id = $driver->id;
             $orderState->status_id = '3';
             $orderState->save();
-        
             $driverOrdersBuffering =new \Modules\Drivers\Entities\DriverOrdersBuffering;
             $driverOrdersBuffering->order_id = $order->id;
             $driverOrdersBuffering->driver_id = $driver->id;
@@ -61,8 +60,10 @@ class OrdersController extends Controller{
             $driverORderStates->status_id  = '3'; 
             $driverORderStates->time  = date('H:i:s');
             $driverORderStates->save();
-            $order->order_driver_reach_time = now();
+            $order->order_driver_reach_time =Carbon::now();
             $order->save();
+            // dd($driverOrdersBuffering);
+
             $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
             $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             $vendor->notify(new \Modules\Vendors\Notifications\NotifyVendorOfNewOrder($order));
@@ -76,16 +77,90 @@ class OrdersController extends Controller{
 
         return response()->json(['message' => 'Order was checked']);
     }
-    public static function dispatchOrderToNewDriver(){
-        return now()->format('H:s:i');
+    
+    public static function dispatchOrderToNewDriver(Request $request){
         $orders = \Modules\Products\Entities\Orders::
         where('last_status' , null)
         ->where('checkout_status', 1)
-        ->whereDate('dispatchOrderToNewDriver', '>=', now()-60)
+        ->where('order_driver_reach_time', '<=', Carbon::now()->subMinute()->format('Y-m-d H:i:s'))
         ->get();
-        $created_at =$orders[0]->created_at;
-        $created_at_seconds =  Carbon::parse($created_at)->format('U');
-        return  Carbon::createFromTimestamp($created_at_seconds)->format('H:s:i');
+        $orderControllerClass = new OrdersController();
+        foreach($orders as $order){
+            $request->merge(['order_id' => $order->id]);
+            $orderControllerClass->changeDriverAutoBySystem($request);
+        }
+        return response()->json(['ok']);
+    } 
+    public  function changeDriverAutoBySystem(Request $request){
+        $request->validate([
+            'order_id' => 'required',
+        ]);
+        \DB::beginTransaction();
+        try {
+            $bufferOrder = \Modules\Drivers\Entities\DriverOrdersBuffering::
+            where('order_id', $request->order_id)
+            ->latest()
+            ->first();
+            
+            if(!$bufferOrder){
+                $this->FoundNewDriver($request);
+            }else{
+                $driver = \Modules\Drivers\Entities\Driver::whereId($bufferOrder->driver_id)->First(); 
+
+                $orderState = \Modules\Products\Entities\OrderState::where('driver_id', $driver->id)
+                ->where('order_id',$request->order_id)
+                ->latest()
+                ->first();
+    
+                if(!$orderState || $orderState->status_id != '3'){
+                    return response()->json([
+                        'message' => 'Not Allowed This Order Not For This Driver'
+                    ],403);
+                }
+                
+                $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->first();
+                if($order->last_status != null){
+                    return response()->json([
+                        'message' => 'This Order is have status '
+                    ],403);
+                }
+    
+                $driverOrdersBuffering = \Modules\Drivers\Entities\DriverOrdersBuffering::
+                where('driver_id', $driver->id)
+                ->where('order_id', $request->order_id)
+                ->first();
+                if(!$driverOrdersBuffering ){
+                    return response()->json([
+                        'message' => 'Not Allowed This Order Not For You'
+                    ],403);
+                }
+                $driverOrdersBuffering->delete();
+    
+                $vendor = \Modules\Vendors\Entities\Vendors::whereId($order->seller_id)->active()->first();
+                // $vendor = \Modules\Users\Entities\User::whereId($vendor->user_id)->first();
+                // $vendor->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
+                
+                $this->changeStatus($request, $driver);
+
+                $order->last_status  = null;
+                $order->save();
+                $buffering = \Modules\Drivers\Entities\DriverOrdersBuffering::where('order_id',  $request->order_id)
+                ->where('driver_id', $driver->id)
+                ->delete();
+    
+                $this->FoundNewDriver($request);
+            }
+            \DB::commit();
+            
+            
+            \DB::commit();
+        } catch (\Exception $e) {
+
+            \DB::rollback();
+            return response()->json(['message' => $e->getMessage()], 403);
+        }
+
+        return response()->json(['data' => 'ok']);
     }
     public function checkout(Request $request){
        
@@ -156,7 +231,8 @@ class OrdersController extends Controller{
 
         return response()->json(['message' => 'Wait For Driver Accept Order']);
     }
-
+   
+   
     public function DriverAcceptORRejectOrder(Request $request){
         $request->validate([
             'order_id' => 'required',
@@ -285,6 +361,7 @@ class OrdersController extends Controller{
         $driverORderStates->status_id  = $orderState->status_id; 
         $driverORderStates->time  = date('H:i:s');
         $driverORderStates->save();
+
         return $orderState->id;
     }
    
