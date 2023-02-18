@@ -8,10 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class DriverController extends Controller{
+    private $database;
+
     public function __construct(){
         $this->middleware('auth:api', [
             'except' => []
         ]);
+        $this->database = \App\Firebase\FirebaseService::connect();
+
     }
 
     public function homePage(){
@@ -331,6 +335,10 @@ class DriverController extends Controller{
                 $driver->status_id = 1;
                 $driver->save();
             }
+            $this->database->getReference('orders/' .$request->order_id)
+            ->update([
+                'status_id' => $request->status_id,
+            ]);
         \DB::commit();
         } catch (\Exception $e) {
 
@@ -424,6 +432,12 @@ class DriverController extends Controller{
             $q->where('status_id', '8');
         })
         ->count();
+        $this->database->getReference('drivers/' .$driver->id)
+            ->update([
+                'status_id' => $request->status_id == 1 ? 'active' : 'deactivate',
+                'location' => $request->location
+            ]);
+        
         return response()->json([
             'data' => [
                 'location' => json_decode($driver->location),

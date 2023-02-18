@@ -10,10 +10,14 @@ use Illuminate\Routing\Controller;
 class OrdersController extends Controller{
     use \App\Traits\NearestDriver;
     use \App\Traits\NearestVendors;
+    private $database;
+
     public function __construct(){
         $this->middleware('auth:api', [
             'except' => []
         ]);
+        $this->database = \App\Firebase\FirebaseService::connect();
+
     }
     public function FoundNewDriver(Request $request){
         $request->validate([
@@ -63,7 +67,11 @@ class OrdersController extends Controller{
             $order->order_driver_reach_time =Carbon::now();
             $order->save();
             // dd($driverOrdersBuffering);
-
+            $this->database->getReference('orders/' .$request->order_id)
+            ->update([
+                'buffering_driver_id' => $driver->id,
+                'status_id' => '3'
+            ]);
             $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
             $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             $vendor->notify(new \Modules\Vendors\Notifications\NotifyVendorOfNewOrder($order));
@@ -169,29 +177,29 @@ class OrdersController extends Controller{
         try {
             
             $order = \Modules\Products\Entities\Orders::with('user')->where('buyer_id', $user->id)
-               ->where('checkout_status', null)
-                ->first();
-                if(!$order){
-                    return response()->json([
-                        'message' => 'Make new order'
-                    ],405);
-                }
-                if(count($order->order_details) == 0){
-                    return response()->json(['you should add to cart first'],403);
-                }
-                $black_list = \Modules\Products\Entities\OrderState::where('status_id' ,'5')
-                ->where('order_id', $order->id)
-                ->get(['driver_id']);
-                $black_list = $black_list->toArray();
-                $orderLocation = json_decode($order->location);
-                $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->active()->first();
-                if(!$vendor){
-                    return response()->json([
-                        'message' => 'This vendor is  deactivate'
-                    ],403);
-                }
-                $vendorLocation = json_decode($vendor->location);
-                $distance = $this->distanceBetweenTwoPoints($vendorLocation->lat,$vendorLocation->long , $orderLocation->lat, $orderLocation->long);
+            ->where('checkout_status', null)
+            ->first();
+            if(!$order){
+                return response()->json([
+                    'message' => 'Make new order'
+                ],405);
+            }
+            if(count($order->order_details) == 0){
+                return response()->json(['you should add to cart first'],403);
+            }
+            $black_list = \Modules\Products\Entities\OrderState::where('status_id' ,'5')
+            ->where('order_id', $order->id)
+            ->get(['driver_id']);
+            $black_list = $black_list->toArray();
+            $orderLocation = json_decode($order->location);
+            $vendor = \Modules\Vendors\Entities\Vendors::where('id', $order->vendor->id)->active()->first();
+            if(!$vendor){
+                return response()->json([
+                    'message' => 'This vendor is  deactivate'
+                ],403);
+            }
+            $vendorLocation = json_decode($vendor->location);
+            $distance = $this->distanceBetweenTwoPoints($vendorLocation->lat,$vendorLocation->long , $orderLocation->lat, $orderLocation->long);
 
             $driver =  $this->NearestDriverByType($orderLocation->lat, $orderLocation->long,$black_list );
             if(!$driver){
@@ -199,29 +207,35 @@ class OrdersController extends Controller{
                     'message' => "Sorry no driver found, you can wait a few minutes if you don't find one too, please contact technical support "
                 ],403);
             }
-                $orderState =new \Modules\Products\Entities\OrderState;
-                $orderState->order_id = $order->id;
-                $orderState->driver_id = $driver->id;
-                $orderState->status_id = '3';
-                $orderState->save();
+            $orderState =new \Modules\Products\Entities\OrderState;
+            $orderState->order_id = $order->id;
+            $orderState->driver_id = $driver->id;
+            $orderState->status_id = '3';
+            $orderState->save();
 
-                $driverState =new  \Modules\Products\Entities\DriverOrderState();
-                $driverState->order_id  = $order->id;
-                $driverState->driver_id = $driver->id;
-                $driverState->status_id = '3';
-                $driverState->time = date('H:i:s');
-                $driverState->save();
+            $driverState =new  \Modules\Products\Entities\DriverOrderState();
+            $driverState->order_id  = $order->id;
+            $driverState->driver_id = $driver->id;
+            $driverState->status_id = '3';
+            $driverState->time = date('H:i:s');
+            $driverState->save();
 
-                $driverOrdersBuffering =new \Modules\Drivers\Entities\DriverOrdersBuffering;
-                $driverOrdersBuffering->order_id = $order->id;
-                $driverOrdersBuffering->driver_id = $driver->id;
-                $driverOrdersBuffering->save();
+            $driverOrdersBuffering =new \Modules\Drivers\Entities\DriverOrdersBuffering;
+            $driverOrdersBuffering->order_id = $order->id;
+            $driverOrdersBuffering->driver_id = $driver->id;
+            $driverOrdersBuffering->save();
 
-                $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
-                $order->checkout_status = 1;
-                $order->order_driver_reach_time = now();
-                $order->save();
-                $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
+            $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
+            $order->checkout_status = 1;
+            $order->order_driver_reach_time = now();
+            $order->save();
+            $this->database->getReference('orders/' .$request->order_id)
+            ->update([
+                'status_id' => '3',
+                'checkout' => true,
+                'buffering_driver_id' => $driver->id,
+            ]);
+            $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             \DB::commit();
         } catch (\Exception $e) {
 
@@ -259,7 +273,7 @@ class OrdersController extends Controller{
                 ],403);
             }
             
-            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->first();
+            $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->first();
             if($order->last_status != null){
                 return response()->json([
                     'message' => 'This Order is have status '
@@ -289,6 +303,17 @@ class OrdersController extends Controller{
                 // make driver deactivate
                 $driver->status_id  = '2';
                 $driver->save();
+                $this->database->getReference('orders/' .$request->order_id)
+                ->update([
+                    'driver_id' => $driver->id,
+                ]);
+                $this->database->getReference('drivers/' .$driver->id)
+                ->update([
+                    'status_id' => $driver->status_id == 1 ? 'active' : 'deactivate',
+                    'vendor_location' => $order->vendor->location,
+                    'distance_location' => $order->location,
+                    'current_order' => $order->id
+                ]);
                 $this->removeBufferAndFindDriver($request, $driver);
                 
             }
@@ -430,7 +455,6 @@ class OrdersController extends Controller{
             'after_discount' => $order->after_discount,
             'coupon_discount' => $order->coupon ? $order->coupon->value : null,
             'offer_discount' => $order->offer ? $order->offer->offer->value : null,
-
         ];
         $products = collect([]);
         foreach($order->order_details as $product){
@@ -455,14 +479,13 @@ class OrdersController extends Controller{
         if(!$order->products){
             return response()->json(['you should add to cart first'],403);
         }
+        
         return response()->json([
             'data' => [
-            'orderStatusList'  =>$orderStates_list,
-            'products' => $products,
-            'orderDetail' => $orderDetail
-
-        ],
-
+                'orderStatusList'  =>$orderStates_list,
+                'products' => $products,
+                'orderDetail' => $orderDetail
+            ],
         ]);
 
     }

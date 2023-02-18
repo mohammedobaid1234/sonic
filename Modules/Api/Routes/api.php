@@ -107,4 +107,6 @@ Route::group(['middleware' => 'api'], function($router) {
     Route::get('home-page-for-vendor','VendorAppController@homePage');
 
 
+
+    
 });

@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('get-firebase-data', 'FirebaseController@index')->name('firebase.index');
 
 Route::prefix('api')->group(function() {
     Route::get('/', 'ApiController@index');
