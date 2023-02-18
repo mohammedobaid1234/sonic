@@ -72,6 +72,10 @@ class OrdersController extends Controller{
                 'buffering_driver_id' => $driver->id,
                 'status_id' => '3'
             ]);
+            $this->database->getReference('drivers/' .$driver->id)
+            ->update([
+                'buffer_orders' =>['order_id' => $order->id]
+            ]);
             $user = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
             $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
             $vendor->notify(new \Modules\Vendors\Notifications\NotifyVendorOfNewOrder($order));
@@ -308,11 +312,11 @@ class OrdersController extends Controller{
                     'driver_id' => $driver->id,
                 ]);
                 $this->database->getReference('drivers/' .$driver->id)
-                ->update([
+                ->set([
                     'status_id' => $driver->status_id == 1 ? 'active' : 'deactivate',
                     'vendor_location' => $order->vendor->location,
                     'distance_location' => $order->location,
-                    'current_order' => $order->id
+                    'current_order' => $order->id,
                 ]);
                 $this->removeBufferAndFindDriver($request, $driver);
                 
