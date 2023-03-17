@@ -55,5 +55,8 @@ class Category extends Model implements HasMedia{
     public function status(){
         return $this->belongsTo(\Modules\Products\Entities\CategoryStatus::class);
     }
+    public function products(){
+       return $this->hasMany(\Modules\Products\Entities\Product::class);
+    }
 
 }

@@ -10,7 +10,7 @@ class ProductsController extends Controller{
     use \App\Traits\NearestVendors;
     public function __construct(){
         $this->middleware('auth:api', [
-            'except' => []
+            'except' => ['vendorMenuCategory']
         ]);
     }
 
@@ -391,10 +391,9 @@ class ProductsController extends Controller{
 
     }
     public function getProductsUnderOffer(Request $request, $id){
-       
         $user = auth()->guard('api')->user();
-       $offer = \Modules\Vendors\Entities\Offer::with('offer_product.product','type')->whereId($id)->first();
-       $vendor = \Modules\Vendors\Entities\Vendors::with('user')->whereId($offer->vendor_id)->first();
+        $offer = \Modules\Vendors\Entities\Offer::with('offer_product.product','type')->whereId($id)->first();
+        $vendor = \Modules\Vendors\Entities\Vendors::with('user')->whereId($offer->vendor_id)->first();
        if(!$vendor){
         return response()->json([
             'message' => 'This Vendor no active'
@@ -409,7 +408,6 @@ class ProductsController extends Controller{
        $productsList = collect([]);
         //    return $offer;
         $productsNotInOffer = count(array_diff($order->order_details()->pluck('product_id')->toArray(),$offer->offer_product()->pluck('product_id')->toArray())) >0 ? false : true;
-        return $productsNotInOffer;
        if($offer->offer_product){
             foreach($offer->offer_product as $product) {
                 $spesficProduct = $product->product;
@@ -596,16 +594,17 @@ class ProductsController extends Controller{
             'attributes' => 'required'
        ]);
        $product = \Modules\Products\Entities\Product::whereId($request->product_id)->first();
-        //   if(!$product){
-        //     return response()->json([
-        //         'message' =>  'Not Found'
-        //         ]);
-        //   }
+          if(!$product){
+            return response()->json([
+                'message' =>  'Not Found'
+                ]);
+          }
         $attributes = json_decode($request['attributes']);
        $count = 0;
        if($attributes->value1){
         $count++;
        }
+       
        if($attributes->value2){
         $count++;
        }
@@ -659,6 +658,15 @@ class ProductsController extends Controller{
             ]
         ]);
 
+    }
+
+    public function vendorMenuCategory($id){
+        $menu = \Modules\Products\Entities\Category::whereHas('products', function($q) use($id) {
+            $q->whereHas('vendor', function($qn) use($id){
+                $qn->where('id', $id);
+            });
+        })->get();
+        return $menu;
     }
   
 }
