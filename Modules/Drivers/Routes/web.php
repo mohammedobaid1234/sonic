@@ -24,7 +24,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function(){
             Route::get('/manage', 'DriversController@manage')->name('manage');
             Route::get('/driver-info/{id}', 'DriversController@driverInfo')->name('driverInfo');
             Route::get('/user/{id}', 'DriversController@UserVendor');
-            Route::post('/license-image-add/{id}', 'DriversController@addLicenseImage')->name('image_remove');
+            Route::post('/license-image-add/{id}', 'DriversController@addLicenseImage')->name('image_add');
             Route::post('/license-image-remove/{id}', 'DriversController@removeLicenseImage')->name('image_remove');
         });
         Route::resource('drivers', DriversController::class);
