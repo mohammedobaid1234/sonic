@@ -26,11 +26,11 @@ class OrdersController extends Controller{
                 $vendor_ids = $vendorsParent->children()->pluck('id');
                 $vendor_ids->push($vendorsParent->id);
                 $data = \Modules\Products\Entities\Orders::
-                with('order_details.product','user','vendor','last_status.state','order_details.variation.attributes','driver.user','offer.offer.type','coupon.coupon','add_status.state')
+                with('order_details.product','user','vendor','buffering_drivers.driver.user','last_status.state','order_details.variation.attributes','driver.user','offer.offer.type','coupon.coupon','add_status.state')
                 ->whereIn('seller_id', $vendor_ids)
                 ->select('*');
             }else{
-                $data = \Modules\Products\Entities\Orders::with('order_details.product','order_details.variation.attributes','user','vendor','add_status.state','last_status.state','driver.user','offer.offer.type','coupon.coupon')->select('*');
+                $data = \Modules\Products\Entities\Orders::with('order_details.product','buffering_drivers.driver.user','order_details.variation.attributes','user','vendor','add_status.state','last_status.state','driver.user','offer.offer.type','coupon.coupon')->select('*');
             }
             return Datatables::of($data)
             ->addColumn('action', function ($order) {
@@ -89,6 +89,7 @@ class OrdersController extends Controller{
 
         return view('products::orders',[
             'data' => $data,
+            
             'vendors' => \Modules\Vendors\Entities\Vendors::get()
         ]);
     }

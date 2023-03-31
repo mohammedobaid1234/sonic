@@ -43,6 +43,9 @@ class Orders extends Model{
     public function add_status(){
         return $this->hasMany(\Modules\Products\Entities\OrderState::class, 'order_id');
     }
+    public function buffering_drivers(){
+        return $this->hasOne(\Modules\Drivers\Entities\DriverOrdersBuffering::class, 'order_id')->latest();
+    }
    
    public function homePageDriver(){
     # code...

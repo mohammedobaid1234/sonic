@@ -42,6 +42,7 @@
                 <th>{{__('Vendor Name')}}</th>
                 <th>{{__('User Name')}}</th>
                 <th>{{__('Drvier Name')}}</th>
+                <th>{{__('Buffer Drvier Name')}}</th>
                 <th>{{__('Total')}}</th>
                 <th>{{__('Total Afer Discount')}}</th>
                 <th>{{__('Last State')}}</th>
@@ -82,6 +83,7 @@
               {data: 'vendor.company_name', name: 'vendor.company_name', defaultContent: "__"},
               {data: 'user.first_name', name: 'user.first_name', defaultContent: "__"},
               {data: 'driver.user.full_name', name: 'driver.user.full_name', defaultContent: "__"},
+              {data: 'buffering_drivers.driver.user.full_name', name: 'buffering_drivers.driver.user.full_name', defaultContent: "__"},
               {data: 'total', name: 'total', defaultContent: "__"},
               {data: 'after_discount', name: 'after_discount', defaultContent: "__"},
               {data: 'last_status.state.name.en', name: 'last_status.state.name.en', defaultContent: "__"},
