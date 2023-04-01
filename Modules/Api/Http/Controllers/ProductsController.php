@@ -246,10 +246,8 @@ class ProductsController extends Controller{
         \DB::beginTransaction();
         try {
             $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
-            return response()->json($orderDetailsCo,403);
-    
             if($orderDetailsCo == 0){
-                 $order->vendor_id = null; 
+                 $order->seller_id = null; 
                  $order->save();
             }
             if(!$order->seller_id){
