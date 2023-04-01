@@ -32,7 +32,7 @@ return [
     |            "postmark", "log", "array", "failover"
     |
     */
-
+    'local_domain' => env('MAIL_HOST', 'smtp.titan.email'), 
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
