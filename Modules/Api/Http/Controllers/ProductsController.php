@@ -232,6 +232,13 @@ class ProductsController extends Controller{
         if(!$order){
             return response()->json(['message' => 'Make order'],405);
         }
+        $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
+        return response()->json($orderDetailsCo);
+
+        if($orderDetailsCo == 0){
+             $order->vendor_id = null; 
+             $order->save();
+        }
         $product = \Modules\Products\Entities\Product::whereId($request->product_id)
         ->whereHas('variations', function($q)use($request){
             $q->where('id', $request->variation_id);
@@ -312,7 +319,7 @@ class ProductsController extends Controller{
                 $product->save();
             }
             if($request->flag == 3){
-
+               
                if(!$order_details){
                 return response()->json([
                     'message' => 'This Product is already deleted'
@@ -321,13 +328,7 @@ class ProductsController extends Controller{
                $product->quantity = $product->quantity + $order_details->quantity;
                $product->save();
                $order_details->delete();
-               $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
-               return response()->json($order_details);
-
-               if($orderDetailsCo == 0){
-                    $order->vendor_id = null; 
-                    $order->save();
-               }
+              
             }
             $order_details->total = $order_details->price * $order_details->quantity;
             $order_details->save();
