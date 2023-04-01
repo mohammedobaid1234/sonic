@@ -324,6 +324,7 @@ class ProductsController extends Controller{
                $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
                if($orderDetailsCo == 0)
                $order->vendor_id = null; 
+               $order->save();
             }
             $order_details->total = $order_details->price * $order_details->quantity;
             $order_details->save();
