@@ -312,6 +312,7 @@ class ProductsController extends Controller{
                 $product->save();
             }
             if($request->flag == 3){
+
                if(!$order_details){
                 return response()->json([
                     'message' => 'This Product is already deleted'
@@ -320,6 +321,9 @@ class ProductsController extends Controller{
                $product->quantity = $product->quantity + $order_details->quantity;
                $product->save();
                $order_details->delete();
+               $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
+               if($orderDetailsCo == 0)
+               $order->vendor_id = null; 
             }
             $order_details->total = $order_details->price * $order_details->quantity;
             $order_details->save();
