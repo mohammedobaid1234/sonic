@@ -232,13 +232,7 @@ class ProductsController extends Controller{
         if(!$order){
             return response()->json(['message' => 'Make order'],405);
         }
-        $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
-        return response()->json($orderDetailsCo);
-
-        if($orderDetailsCo == 0){
-             $order->vendor_id = null; 
-             $order->save();
-        }
+       
         $product = \Modules\Products\Entities\Product::whereId($request->product_id)
         ->whereHas('variations', function($q)use($request){
             $q->where('id', $request->variation_id);
@@ -251,6 +245,13 @@ class ProductsController extends Controller{
         }
         \DB::beginTransaction();
         try {
+            $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
+            return response()->json($orderDetailsCo);
+    
+            if($orderDetailsCo == 0){
+                 $order->vendor_id = null; 
+                 $order->save();
+            }
             if(!$order->seller_id){
                 $order->seller_id = $product->vendor_id;
                 $order->save();
