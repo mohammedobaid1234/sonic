@@ -72,7 +72,7 @@ class SocialMediaLinksController extends Controller{
         return view('cms::create-social_media_links',[
             'data' => $data,
         ]);
-    } 
+    }
     public function store(Request $request){
         \Auth::user()->authorize('cms_module_social_media_links_store');
 
@@ -108,7 +108,7 @@ class SocialMediaLinksController extends Controller{
         }
 
         return response()->json(['message' => 'ok']);
-        
+
     }
     public function edit($id){
         \Auth::user()->authorize('cms_module_social_media_links_manage');
@@ -154,7 +154,7 @@ class SocialMediaLinksController extends Controller{
         }
 
         return response()->json(['message' => 'ok']);
-        
+
     }
     public function destroy(Request $request, $id){
         \Auth::user()->authorize('cms_module_social_media_links_destroy');

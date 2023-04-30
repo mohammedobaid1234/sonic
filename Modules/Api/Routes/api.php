@@ -27,9 +27,9 @@ Route::group(['middleware' => 'api'], function($router) {
     Route::post('/check-code','JWTController@checkCode');
     Route::post('/change-password','JWTController@changePassword');
     Route::post('/change-password-when-login','JWTController@changePassWhenLogin');
-    
+
     Route::post('/home-page','ProductsController@homePage');
-    
+
     Route::post('add-user-image','UserController@addImage');
     Route::post('/update-profile','UserController@editProfile');
     Route::get('/coupons','UserController@coupons');
@@ -88,7 +88,7 @@ Route::group(['middleware' => 'api'], function($router) {
     //     // $result =  json_decode($response);
     //     // return $result->results[0]->formatted;
     //     $user->notify(new \Modules\Drivers\Notifications\NotifyDriverOfNewOrder($order));
-        
+
     // });
 
     Route::get('type-of-vendors','VendorAppController@typeOfVendor');
@@ -111,5 +111,5 @@ Route::group(['middleware' => 'api'], function($router) {
 
 
 
-    
+
 });
