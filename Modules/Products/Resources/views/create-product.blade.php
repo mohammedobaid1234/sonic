@@ -5,18 +5,18 @@
     <div class="form-group">
         <label for="" class="col-sm-2 control-label">{{__('Name Arabic')}}</label>
         <div class="col-sm-10">
-            
+
             <input required type="text" class="form-control " name="name_ar" >
-            
+
             <p class="invalid-feedback"></p>
         </div>
     </div>
     <div class="form-group">
         <label for="" class="col-sm-2 control-label">{{__('Name Endglish')}}</label>
         <div class="col-sm-10">
-            
+
             <input required type="text" class="form-control " name="name_en" >
-            
+
                     <p class="invalid-feedback"></p>
         </div>
     </div>
@@ -25,7 +25,7 @@
         <div class="col-sm-10">
             <Textarea required class="form-control " name="description_ar"></Textarea>
             <p class="invalid-feedback"></p>
-           
+
         </div>
     </div>
     <div class="form-group">
@@ -40,7 +40,7 @@
         <div class="col-sm-10">
             <input required class="form-control" name="price"/>
             <p class="invalid-feedback"></p>
-           
+
         </div>
     </div>
     <div class="form-group">
@@ -54,7 +54,7 @@
         <label for="" class="col-sm-2 control-label">{{__('Deafult Quantity')}}</label>
         <div class="col-sm-10">
             <input class="form-control  " name="quantity"/>
-            
+
             <p class="invalid-feedback"></p>
         </div>
     </div>
@@ -68,7 +68,7 @@
                  @endforeach
             </select>
             <p class="invalid-feedbac"></p>
-            
+
         </div>
     </div>
     <div class="form-group vendor-name">
@@ -84,9 +84,9 @@
                 <option value="{{ $types_of_feature->id }}" >{{ $types_of_feature->name }}</option>
                 @endforeach
             </select>
-            
+
             <p class="invalid-feedback"></p>
-            
+
         </div>
     </div>
     <div class="feature" style="display: none">
@@ -96,7 +96,7 @@
                 <input  class="form-control" name="stating_date" id="stating_date" value=""  />
             </div>
         </div>
-        
+
         <div class="form-group">
             <label class="col-sm-2 control-label">{{__('Ended At')}}</label>
             <div class="col-sm-10">
@@ -117,12 +117,12 @@
                 <label for="" class="col-md-4 control-label">{{__('Product Attribute 1')}}</label>
                 <div class="col-sm-4">
                     <input class="form-control  " name="attribute_id[]" data-action="attr1"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
                 <div class="col-sm-4">
                     <input class="form-control  " name="value[]" data-action="value1"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
             </div>
@@ -130,12 +130,12 @@
                 <label for="" class="col-md-4 control-label">{{__('Product Attribute 2')}}</label>
                 <div class="col-sm-4">
                     <input class="form-control  " name="attribute_id[]" data-action="attr2"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
                 <div class="col-sm-4">
                     <input class="form-control  " name="value[]" data-action="value2"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                 <label for="" class="col-md-4 control-label">{{__('Quantity')}}</label>
                 <div class="col-sm-8">
                     <input class="form-control  " name="quantity[]"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                 <label for="" class="col-md-4 control-label">{{__('Addition Price')}}</label>
                 <div class="col-sm-8">
                     <input class="form-control  " name="price[]"/>
-                    
+
                     <p class="invalid-feedback"></p>
                 </div>
             </div>
@@ -179,7 +179,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
 <script>$id = ''</script>
 {{-- <script>
-    $('button[data-action="addInput"]').on('click',function (e) {  
+    $('button[data-action="addInput"]').on('click',function (e) {
         e.preventDefault();
         $(this).parent().append(`
         <div class="col-sm-10" style='margin-bottom: 10px;'>
@@ -188,14 +188,15 @@
     })
 </script> --}}
 <script>
-  
+
 </script>
 <script>
    myDropzone('products')
  </script>
 <script>
     setTimeout(() => {
-        $('select[name="type_id"]').on('change', function (e) {  
+        $('select[name="type_id"]').on('change', function (e) {
+            console.log("$('select[name="type_id"]')");
         $('.vendor-name').html('');
         $('.categories').html('');
         $id = $(this).val();
@@ -213,9 +214,9 @@
                                 <option value="">Choose  Vendor...</option>
                                 ${options}
                         </select>
-                            
+
                             <p class="invalid-feedback"></p>
-                            
+
                         </div>
                     `);
                 }else{
@@ -225,14 +226,14 @@
                             <select name="vendor_id" id="vendor_id" class="form-control js-example-basic-single  ">
                                 <option value="">أختر نوع المورد...</option>
                                 ${options}
-    
+
                         </select>
-                            
+
                             <p class="invalid-feedback"></p>
-                            
+
                         </div>
                     `);
-                }; 
+                };
                 $(document).ready(function() {
                     $('.js-example-basic-single').select2();
                 });
@@ -253,9 +254,9 @@
                                 <option value="">Choose Type OF Category...</option>
                                 ${options_en_2}
                         </select>
-                            
+
                             <p class="invalid-feedback"></p>
-                            
+
                         </div>
                     `);
                 }else{
@@ -265,14 +266,14 @@
                             <select name="category_id" id="category_id" class="form-control js-example-basic-single  ">
                                 <option value="">أختر نوع التصنيف...</option>
                                 ${options_ar_2}
-    
+
                         </select>
-                            
+
                             <p class="invalid-feedback"></p>
-                           
+
                         </div>
                     `);
-                }; 
+                };
                 $(document).ready(function() {
                     $('.js-example-basic-single').select2();
                 });
@@ -293,7 +294,7 @@
                                 </select>
                             </div>
                             <div class="child"></div>
-                            
+
                         </div>
                         <div class="col-md-4 parent main-div" >
                             <label for="" class="col-md-4 control-label">Product Attribute 2</label>
@@ -309,7 +310,7 @@
                             <label for="" class="col-md-4 control-label">Quantity</label>
                             <div class="col-sm-8">
                                 <input class="form-control  " name='quantity'/>
-                                
+
                                 <p class="invalid-feedback"></p>
                             </div>
                         </div>
@@ -317,7 +318,7 @@
                             <label for="" class="col-md-4 control-label">Price</label>
                             <div class="col-sm-8">
                                 <input class="form-control  " name='price'/>
-                                
+
                                 <p class="invalid-feedback"></p>
                             </div>
                         </div>
@@ -335,7 +336,7 @@
     })
     $('button[data-action="addInput"]').on('click',function (e) {
         e.preventDefault();
-        $value = $("select[name='type_id']['#type_id']").val();
+        $value = $("select[name='type_id']").val();
         addChild($value)
     })
     function addChild($value){
@@ -346,8 +347,8 @@
                 attributes_en = '';
                 attributes_ar = '';
                 data.forEach(element => {
-                    attributes_en +=  `<option value="${element.attribute.id}">${element.attribute.name.en}</option>`;  
-                    attributes_ar +=  `<option value="${element.attribute.id}">${element.attribute.name.ar}</option>`;  
+                    attributes_en +=  `<option value="${element.attribute.id}">${element.attribute.name.en}</option>`;
+                    attributes_ar +=  `<option value="${element.attribute.id}">${element.attribute.name.ar}</option>`;
                 });
                 if($lang == 'ar'){
                     appends(attributes_ar)
@@ -359,7 +360,7 @@
         );
     }
    function valuesAttbute(){
-    $("select[name='attribute_id[]']").on('change', function (e) {  
+    $("select[name='attribute_id[]']").on('change', function (e) {
         $value = $(this).val();
         $this = $(this);
         $this.closest('div.parent').find('.child').text('');
@@ -369,15 +370,15 @@
             $this.closest('div.parent').find('.child').append(`
             <div class="col-sm-4">
                 <input class="form-control  " name="values[]" />
-                
+
                 <p class="invalid-feedback"></p>
             </div>`
             )
             }else{
-                
+
                 values = ''
                 data.forEach(element => {
-                    values +=  `<option value="${element}">${element}</option>`;  
+                    values +=  `<option value="${element}">${element}</option>`;
                 });
                 $this.closest('div.parent').find('.child').append(`
                 <div class="col-sm-4">
@@ -387,7 +388,7 @@
                     </select>
                 </div>`
                 )
-                
+
             }
         });
     });
@@ -403,10 +404,10 @@
             return true;
         }
         attributes = [];
-        $('.parent-div').each(function () {  
+        $('.parent-div').each(function () {
             $this1 = $(this).find(".main-div");
             data1 = {};
-            $.each($this1, function (index, value) { 
+            $.each($this1, function (index, value) {
                if(index == 0){
                 $attibute1 = $(value).find("select[name='attribute_id[]']").val();
                 $value1 = $(value).find("select[name='values[]']").val();
@@ -474,7 +475,7 @@
         }
         $this.find("button:submit").attr('disabled', true);
         $this.find("button:submit").html('<span class="fas fa-spinner" data-fa-transform="shrink-3"></span>');
-    
+
         $.post($("meta[name='BASE_URL']").attr("content") + "/admin/products", data,
         function (response, status) {
             $id = response.data.id;
@@ -510,13 +511,13 @@
                 function (response, status) {
                     http.success({ 'message': response.message });
                      window.location.reload();
-                   
+
                 })
                 .fail(function (response) {
                     http.fail(response.responseJSON, true);
                 })
             }else{
-                
+
                 http.success({ 'message': response.message });
                 window.location.reload();
             }

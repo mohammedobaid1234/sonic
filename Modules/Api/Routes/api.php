@@ -113,3 +113,5 @@ Route::group(['middleware' => 'api'], function($router) {
 
 
 });
+
+Route::post('twitter' , 'VendorAppController@twitter');

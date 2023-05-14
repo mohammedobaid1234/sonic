@@ -6,14 +6,79 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Atymic\Twitter\Facade\Twitter;
+use File;
+use Abraham\TwitterOAuth\TwitterOAuth;
+use Atymic\Twitter\TwitterClient;
 
 class VendorAppController extends Controller{
     public function __construct(){
         $this->middleware('auth:api', [
         'except' => [
-            'typeOfVendor'
+            'typeOfVendor',
+            'twitter'
         ]
      ]);
+    }
+
+    public function twitter()
+    {
+//        $connection = new TwitterOAuth('RtHzO3lcsDLun4tgXwTU40M2N',
+//            'AgCCqBiegkCJ0IfZpLP4rmL8tPEQ9hSNnGvYmBthFZwu38opls',
+//            '1110654316992438276-OSwdYUYkyKKVstwnkg4Crdbx25AGbk',
+//            'jMzel7bTxnZ5uiOj0v6oQn3JGe0bWx3jUEG0FtO3HTeaK');
+//        $content = $connection->get("account/verify_credentials");
+//        $status = 'Hello, Twitter!';
+//        $result = $connection->post('statuses/update', ['status' => $status]);
+//
+//        if ($connection->getLastHttpCode() == 200) {
+//            echo 'Tweet posted successfully!';
+//        } else {
+//            echo 'Error posting tweet: ' . $connection->getLastBody()->errors[0]->message;
+//        }
+        $bearerToken = 'AAAAAAAAAAAAAAAAAAAAAId9nAEAAAAAj83HcpQYwCFvf5ezniSlC5APMt8%3D3mcam1ileULVELfZbZM3c0ITl1u3YcKHwVnYiMIQp66KXkswNm';
+
+        $client = new TwitterClient($bearerToken);
+        $text = 'Hello, Twitter!';
+
+        $response = $client->tweet([
+            'text' => $text,
+        ]);
+
+        if ($response->getStatusCode() == 201) {
+            echo 'Tweet posted successfully!';
+        } else {
+            $body = json_decode($response->getBody());
+            echo 'Error posting tweet: ' . $body->errors[0]->title;
+        }
+        $poduct = \Modules\Products\Entities\Product::first();
+//        $img = File::get(storage_path('app/public/11/04e6f6a66ecdae68b3e972a3856c52bc.png'));
+//        $uploaded_media  = Twitter::uploadMedia(['media' => $img]);
+//        dd($uploaded_media);
+
+//        return Twitter::post("media/upload.json", [
+//            'multipart' => [
+//                [
+//                    'name'     => 'command',
+//                    'contents' => 'APPEND'
+//                ],
+//                [
+//                    'name'     => 'media_id',
+//                    'contents' => $uploaded_media->media_id
+//                ],
+//                [
+//                    'name'     => 'segment_index',
+//                    'contents' => 0
+//                ],
+//                [
+//                    'name'     => 'media_data',
+//                    'contents' => base64_encode(file_get_contents(storage_path('app/public/11/04e6f6a66ecdae68b3e972a3856c52bc.png')))
+//                ]
+//            ]
+//        ])->getBody();
+//         return Twitter::postTweet(['status' => 'Laravel is beautiful', 'response_format' => 'json']);
+//
+//        return Twitter::postTweet(['status' => 'Laravel is beautiful', 'media_ids' => $uploaded_media->media_id_string]);
     }
     public function checkVendor(){
         $user =auth()->guard('api')->user();
@@ -46,7 +111,7 @@ class VendorAppController extends Controller{
             $extension = strtolower($request->file('file')->extension());
             $media_new_name = strtolower(md5(time())) . "." . $extension;
             $collection = "vendor_logo_url";
-            
+
             $vendor->addMediaFromRequest('file')
                 ->usingFileName($media_new_name)
                 ->usingName($request->file('file')->getClientOriginalName())
@@ -99,7 +164,7 @@ class VendorAppController extends Controller{
             if(isset( $orderStatus)){
                 // return $orderStatus;
                 $orderDetails = [
-                    
+
                     'id' => $order->id,
                     'location' => json_decode($order->location),
                     'location_formate' => getLocationFromLatAndLong( json_decode($order->location)->lat ?? 34.620745, json_decode($order->location)->long ?? 34.620745, app()->getLocale()),
@@ -140,7 +205,7 @@ class VendorAppController extends Controller{
             return response()->json(['message' => 'Not allow'],403 );
         }
         $order = \Modules\Products\Entities\Orders::
-        with('order_details.variation.attributes.type','add_status', 
+        with('order_details.variation.attributes.type','add_status',
         'user','order_details.product', 'order_details.variation.attributes','offer.offer.type','coupon.coupon')
         ->where('seller_id', $vendor->id)
         ->first();
@@ -164,9 +229,9 @@ class VendorAppController extends Controller{
                 $productVariations->push([
                     'id' => $productVariation->id,
                     'variation_id' => $productVariation->variation_id,
-                    'attribute_id' => $productVariation->type_id,  
-                    'attribute_name' => $productVariation->type->getTranslation('name', \App::getLocale()),  
-                    'value' => $productVariation->value,  
+                    'attribute_id' => $productVariation->type_id,
+                    'attribute_name' => $productVariation->type->getTranslation('name', \App::getLocale()),
+                    'value' => $productVariation->value,
                 ]);
             }
             $products->push([
@@ -174,7 +239,7 @@ class VendorAppController extends Controller{
                 'name' => $product->product->getTranslation('name', \App::getLocale()),
                 'productVariation' => $productVariations
             ]);
-           
+
         }
          $orderDetails = [
             'id' => $order->id,
@@ -198,7 +263,7 @@ class VendorAppController extends Controller{
             'data' => $orderDetails
         ]);
     }
-    
+
     public function products(Request $request){
         $user =auth()->guard('api')->user();
         $vendor = \Modules\Vendors\Entities\Vendors::where('user_id', $user->id)->first();
@@ -230,19 +295,19 @@ class VendorAppController extends Controller{
             $numberOFOrders = \Modules\Products\Entities\OrderDetails::where('product_id', $product->id)->count();
             $productsList->push([
                 'id' => $product->id,
-                'name' => $product->getTranslation('name', \App::getLocale()),  
-                'description' => $product->getTranslation('description', \App::getLocale()),  
+                'name' => $product->getTranslation('name', \App::getLocale()),
+                'description' => $product->getTranslation('description', \App::getLocale()),
                 'price' => $product->price,
                 'quantity' => $product->quantity,
                 'image_url' => $product->image_url,
                 'percentage_of_rating' => $product->percentage_of_rating,
                 'number_of_raters' => $product->number_of_raters,
                 'numberOFOrders' => $numberOFOrders,
-                'status' => $product->status? $product->status->getTranslation('name', \App::getLocale()) : '', 
+                'status' => $product->status? $product->status->getTranslation('name', \App::getLocale()) : '',
             ]);
         }
         return response()->json([
-            'data' => $productsList 
+            'data' => $productsList
         ]);
     }
 
@@ -266,12 +331,12 @@ class VendorAppController extends Controller{
             $user = auth()->guard('api')->user();
             $vendor = \Modules\Vendors\Entities\Vendors::where('user_id', $user->id)->first();
             if(!$vendor){
-                return response()->json(['message' =>'Not Allowed'],403); 
+                return response()->json(['message' =>'Not Allowed'],403);
             }
             $branch = null;
             // if($user->hasRole('vendor') && $user->hasRole('main branch supplier')){
             //     if(!$request->branch_id){
-            //         return response()->json(['message' =>'Not Allowed You Should Add Branch'],403); 
+            //         return response()->json(['message' =>'Not Allowed You Should Add Branch'],403);
             //     }
             //     $branch = \Modules\Vendors\Entities\Vendors::where('id',$request->branch_id)->first();
             //     if(!$branch){
@@ -279,10 +344,10 @@ class VendorAppController extends Controller{
             //         where('id',$request->branch_id)
             //         ->where('parent_id', $vendor->id)
             //         ->first();
-                    
-            //         return response()->json([$vendor->id],403); 
+
+            //         return response()->json([$vendor->id],403);
             //         if(!$branch){
-            //             return response()->json(['message' =>'Not Allowed'],403); 
+            //             return response()->json(['message' =>'Not Allowed'],403);
             //         }
             //     }
 
@@ -317,7 +382,7 @@ class VendorAppController extends Controller{
         return response()->json(['message' => 'ok', 'data'=> $product->id]);
 
     }
-  
+
     public function addImageForProduct(Request $request){
         $request->validate([
             'product_id' => 'required'
@@ -338,7 +403,7 @@ class VendorAppController extends Controller{
             $extension = strtolower($request->file('file')->extension());
             $media_new_name = strtolower(md5(time())) . "." . $extension;
             $collection = "product-image";
-            
+
             $product->addMediaFromRequest('file')
                 ->usingFileName($media_new_name)
                 ->usingName($request->file('file')->getClientOriginalName())
@@ -367,15 +432,15 @@ class VendorAppController extends Controller{
                         if(!$productVariation){
                             return response()->json(['message'=> 'Not Allow'],403);
                         }
-                        
+
                         $productVariation->price = $attribute['price'];
                         $productVariation->quantity = $attribute['quantity'];
                         $productVariation->save();
-                    
+
                     }else{
 
                         if($attribute['value1'] != null || $attribute['value2'] != null ){
-                           
+
                             $productVariation =new \Modules\Products\Entities\ProductVariation();
                             $productVariation->product_id = $request->product_id;
                             $productVariation->created_by  = \Auth::user()->id;
@@ -426,7 +491,7 @@ class VendorAppController extends Controller{
 
             }
             $variationAttribute->variation_id = $productVariation->id;
-            $variationAttribute->type_id = '1'; 
+            $variationAttribute->type_id = '1';
             $productVariation->price = $request->price;
             $productVariation->quantity =$request->quantity;
             $productVariation->save();
@@ -462,9 +527,9 @@ class VendorAppController extends Controller{
         try {
             $offerAvilable = \Modules\Vendors\Entities\Offer::where('vendor_id', $vendor->id)->first();
             if ($offerAvilable) {
-                return response()->json(['message' => 'You Can\'t Add  Coupon You Have Avilable Offers'],403); 
+                return response()->json(['message' => 'You Can\'t Add  Coupon You Have Avilable Offers'],403);
             }
-           
+
             $coupon = \Modules\Vendors\Entities\Coupon::where('code', $request->code)
             ->where('vendor_id', $vendor->id)
             ->first();
@@ -521,7 +586,7 @@ class VendorAppController extends Controller{
             ]);
         }
         return response()->json(['data' => $ratingList]);
-        
+
     }
     public function ratingPage(){
         $user =auth()->guard('api')->user();
@@ -543,7 +608,7 @@ class VendorAppController extends Controller{
                     'id' => $rating->product->id,
                     'name' => $rating->product->getTranslation('name', \App::getLocale()),
                     'image_url' => $rating->product->image_url,
-                    
+
                 ],
                 'user'=>[
                     'id' => $rating->user->id,
@@ -575,7 +640,7 @@ class VendorAppController extends Controller{
 
         \DB::beginTransaction();
         try {
-           
+
             // $coupon = \Modules\Vendors\Entities\Coupon::where('vendor_id', $vendor->id)->first();
             // if($coupon){
             //     return response()->json(['message' => 'You can\'t Add Offer You have Avilable Coupons'],403);
@@ -583,10 +648,10 @@ class VendorAppController extends Controller{
             if($request->products_id ){
 
                 foreach ($request->products_id as $id) {
-                    $product = \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->whereId($id)->first(); 
+                    $product = \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->whereId($id)->first();
                     if(!$product){
                         return $id;
-                        return response()->json(['message' => 'Not Allow'],403); 
+                        return response()->json(['message' => 'Not Allow'],403);
                     }
                 }
                 $offerAvilable = \Modules\Vendors\Entities\OfferProduct::whereHas('offer', function($q)use($request, $vendor){
@@ -595,7 +660,7 @@ class VendorAppController extends Controller{
                 })
                 ->get();
                 if(count($offerAvilable) > 0){
-                    return response()->json(['message' => 'You Can\'t Add  Product Exsist In Another Order'],403); 
+                    return response()->json(['message' => 'You Can\'t Add  Product Exsist In Another Order'],403);
                 }
             }
             if($request->type_id == '1' && $request->value == null){
@@ -638,7 +703,7 @@ class VendorAppController extends Controller{
         }
 
         return response()->json(['message' => 'ok','data' => $offer->id]);
-    } 
+    }
     public function addImageForOffer(Request $request){
         $request->validate([
             'offer_id' => 'required'
@@ -688,7 +753,7 @@ class VendorAppController extends Controller{
                 'about_store' => $vendor->description
             ]
         ]);
-        
+
     }
 
     public function updateProfile(Request $request){
@@ -759,7 +824,7 @@ class VendorAppController extends Controller{
         $productsCount = \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->count();
         $availableProducts =  \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->where('status_id', '1')->count();
         $deactivateProducts =  \Modules\Products\Entities\Product::where('vendor_id', $vendor->id)->where('status_id', '2')->count();
-        
+
         $newOrders = \Modules\Products\Entities\Orders::where('last_status', '13')
         ->whereDate('created_at',  Carbon::today())
         ->where('seller_id', $vendor->id)->count();
@@ -783,15 +848,15 @@ class VendorAppController extends Controller{
         // ->get();
         $ordersMounthy = collect([]);
         $orderMonthlys = 0;
-        for ($i=1; $i <= 12; $i++) { 
+        for ($i=1; $i <= 12; $i++) {
             $orderMonthlys = \Modules\Products\Entities\Product::
             whereMonth('created_at', $i)->count();
             $ordersMounthy->push(["$i" => $orderMonthlys  ]);
         }
         return $ordersMounthy;
-        // select week(created_at) as WEEKOFYEAR,month(created_at) as month, count(*) as total 
+        // select week(created_at) as WEEKOFYEAR,month(created_at) as month, count(*) as total
         // from `pm_products`
-        // where MONTH('created_at')=9 
+        // where MONTH('created_at')=9
         // group by week('created_at'), MONTH('created_at')
 
         // SELECT week(created_at) as WEEKOFYEAR,month(created_at) as month, count(*) as total

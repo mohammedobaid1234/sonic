@@ -5,7 +5,9 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "8.1.16",
+        "php": "^8.2",
+        "abraham/twitteroauth": "^5.0",
+        "atymic/twitter": "^3.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "kreait/firebase-php": "^7.2.0",
@@ -36,12 +38,13 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Atymic\\Twitter\\": "vendor/atymic/twitter/src/"
         },
         "files": [
             "app/helpers.php"
         ]
-        
+
     },
     "autoload-dev": {
         "psr-4": {
@@ -49,9 +52,9 @@
             "App\\": "app/",
             "Modules\\": "Modules/"
         }
-        
+
     },
-    
+
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
