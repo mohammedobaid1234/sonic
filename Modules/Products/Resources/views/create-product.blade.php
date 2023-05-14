@@ -196,7 +196,6 @@
 <script>
     setTimeout(() => {
         $('select[name="type_id"]').on('change', function (e) {
-            console.log("$('select[name="type_id"]')");
         $('.vendor-name').html('');
         $('.categories').html('');
         $id = $(this).val();

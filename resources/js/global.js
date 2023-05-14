@@ -1,9 +1,9 @@
-$('a#chp').on('click', function () {  
+$('a#chp').on('click', function () {
     setTimeout(() => {
         $('.modal-backdrop').remove();
     }, 1000);
 })
-$('.topbar-item').on('click', function () {  
+$('.topbar-item').on('click', function () {
     setTimeout(() => {
         $('.offcanvas-overlay').remove();
     }, 1000);
@@ -55,7 +55,7 @@ $('form').find( 'select, textarea, input' ).each(function(){
     if( ! $( this ).prop( 'required' )){
 
     } else {
-        
+
         $(this).closest('div').siblings('label'). append('<span style="color:#be4b49"> *</span>');
     }
 });
@@ -66,18 +66,18 @@ function imageRemoveAndAppeared(image_type, $id){
     $.get($("meta[name='BASE_URL']").attr("content") + '/admin/' + image_type +'/' + $id, {}, function (response, status) {
         response.forEach(element => {
          $('.grid-container').append(`
-        <div class="grid-item"><div class="dz-preview dz-processing dz-image-preview dz-complete image_div">  
+        <div class="grid-item"><div class="dz-preview dz-processing dz-image-preview dz-complete image_div">
              <div class="dz-image">
                  <img data-dz-thumbnail="" alt="er_model.png" src="${element.url}" style="width: 130px;">
-             </div>  
+             </div>
              <a class="dz-remove" href="" data-action="remove_image" data-id=${element.name}>Remove file</a>
          </div>
         `);
         });
- 
+
      });
     setTimeout(() => {
-        $('a[data-action="remove_image"').on('click', function (e) {  
+        $('a[data-action="remove_image"').on('click', function (e) {
             e.preventDefault();
             $name = $(this).attr('data-id');
             $this = $(this);
@@ -95,7 +95,7 @@ function imageRemoveAndAppeared(image_type, $id){
             })
             .done(function(response) {
                 http.success({ 'message': response.message });
-                $this.parent().remove(); 
+                $this.parent().remove();
             })
             .fail(function(response){
             http.fail(response.responseJSON, true);
@@ -106,7 +106,7 @@ function imageRemoveAndAppeared(image_type, $id){
             // },
             // function (response, status) {
             //     http.success({ 'message': response.message });
-            //     $this.parent().remove() 
+            //     $this.parent().remove()
             // })
             // .fail(function (response) {
             //     http.fail(response.responseJSON, true);
@@ -133,7 +133,7 @@ function successfullyResponse(response){
 }
 
 function myDropzone($type){
-   
+
     $('input[id="btn-submit"]').parent().before(`
             <div class="container">
             <div class="row" style="clear: both;margin: 18px auto; width:70%">
@@ -150,13 +150,13 @@ function myDropzone($type){
         autoProcessQueue: false,
         method: 'POST',
         url: $("meta[name='BASE_URL']").attr("content") + '/admin/' + $type+'/image-add',
-        acceptedFiles: ".jpeg,.jpg,.png,.gif",
+        acceptedFiles: ".jpeg,.jpg,.png,.gif,.webp",
         addRemoveLinks: true,
         parallelUploads: 10,
         headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        
+
         init: function() {
             var myDropzone = this;
             $myDropzone = myDropzone;
@@ -167,17 +167,17 @@ function myDropzone($type){
                 }
             });
         },
-       
+
       }
 }
 
-function changeStatusForAdmin(model) {  
+function changeStatusForAdmin(model) {
     setTimeout(() => {
-        $('button[data-action="changeState"]').on('click', function (e) {  
+        $('button[data-action="changeState"]').on('click', function (e) {
             e.preventDefault();
             $this = $(this);
-            
-            $('button[data-action="save-new-status"]').on('click', function (e) {  
+
+            $('button[data-action="save-new-status"]').on('click', function (e) {
                 $btn = $(this);
                 var buttonText = $this.text();
                     $btn.attr('disabled', true);
@@ -204,13 +204,13 @@ function changeStatusForAdmin(model) {
                     $btn.html(buttonText);
                 });
              });
-        
+
          })
      }, 2000);
-}   
+}
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
-});  
+});
 
 setTimeout(() => {
     $('.disabled-select').attr('disabled', 'disabled-select')
