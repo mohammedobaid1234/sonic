@@ -28,7 +28,6 @@ class DriverController extends Controller{
                 'message' => 'Not Allowed'
             ],403);
         }
-
        $deliverOrder = \Modules\Products\Entities\DriverOrderState::where('driver_id',$driver->id )
        ->where('status_id', 11)
        ->whereDate('created_at',  Carbon::today())
@@ -40,7 +39,7 @@ class DriverController extends Controller{
 
        $returnOrders = \Modules\Products\Entities\DriverOrderState::where('driver_id',$driver->id )
        ->where('status_id', 14)
-     
+
        ->whereDate('created_at',  Carbon::today())
        ->latest()->count();
        $ordersList = \Modules\Products\Entities\Orders::with('user','last_status.state','vendor')
@@ -49,35 +48,36 @@ class DriverController extends Controller{
         ->latest()
         ->first();
 
-        
+
         $orderListLast = null;
         if($ordersList){
             $lastStateForDriver = \Modules\Products\Entities\DriverOrderState::with('order_status')
             ->where('driver_id', $driver->id)
-            ->where('order_id', $ordersList->id)
+//            ->where('order_id', $ordersList->id)
             ->latest()
             ->first();
+//        return $lastStateForDriver;
             $orderListLast = [
                 'id' => $ordersList->id,
                 'user' => $ordersList->user->first_name,
                 'image_url' => $ordersList->vendor->vendor_logo_url,
                 'mobile_no' => $ordersList->user->mobile_no,
                 'location' => json_decode($ordersList->location),
-                'last_state' => $lastStateForDriver->order_status->getTranslation('name', \App::getLocale()),
-                'date' => Carbon::parse($lastStateForDriver->created_at)->format('Y-m-d') 
+                'last_state' => $lastStateForDriver->order_status->getTranslation('name', \App::getLocale()) ?? 'جديد',
+                'date' => Carbon::parse($lastStateForDriver->created_at)->format('Y-m-d')
            ];
         }
 
         $ordersConfirm = \Modules\Drivers\Entities\DriverOrdersBuffering::with('order.vendor')->where('driver_id', $driver->id)->latest()->first();
         $ordersConfirmLast = null;
         if($ordersConfirm){
-            $ordersConfirmLast = [ 
+            $ordersConfirmLast = [
                 'id' => $ordersConfirm->order->id,
                 'image_url' => $ordersConfirm->order->vendor->vendor_logo_url,
                 'location' => json_decode($ordersConfirm->order->location),
                 'location_formate' => getLocationFromLatAndLong( json_decode($ordersConfirm->order->location)->lat ?? 34.620745, json_decode($ordersConfirm->order->location)->long ?? 34.620745, app()->getLocale()),
-                'delivery_date' => Carbon::parse($ordersConfirm->created_at)->format('d M Y') ,      
-                'delivery_time' => Carbon::parse($ordersConfirm->created_at)->format('h:i:s a')   
+                'delivery_date' => Carbon::parse($ordersConfirm->created_at)->format('d M Y') ,
+                'delivery_time' => Carbon::parse($ordersConfirm->created_at)->format('h:i:s a')
             ];
         }
         return response()->json([
@@ -151,7 +151,7 @@ class DriverController extends Controller{
         ->with(['order_details' => function ($query) {
             $query->withoutGlobalScope('App\Scopes\OrderDetailsActiveProductsScope');
         }])
-       
+
 
         ->where('driver_id' , $driver->id)
         ->whereId( $request->order_id)
@@ -215,7 +215,7 @@ class DriverController extends Controller{
                         'mobil_no' => $order->vendor->user->mobil_no,
                         'location' => json_decode($order->vendor->location),
                         'location_formate' => getLocationFromLatAndLong( json_decode($order->vendor->location)->lat ?? 34.620745, json_decode($order->vendor->location)->long ?? 34.620745, app()->getLocale()),
-                        
+
                     ],
                     'orderDetails' => $product_list,
                     'orderState' => $orderStateList
@@ -233,7 +233,7 @@ class DriverController extends Controller{
                'message' => 'Not Allowed'
             ],403);
         }
-       
+
         $ordersConfirms = \Modules\Drivers\Entities\DriverOrdersBuffering::where('driver_id', $driver->id)
         ->with('order.vendor')
         ->orderby('created_at', 'DESC')
@@ -246,8 +246,8 @@ class DriverController extends Controller{
                 'image_url' => $ordersConfirm->order->vendor->vendor_logo_url,
                 'location' => json_decode($ordersConfirm->order->location),
                 'location_formate' => getLocationFromLatAndLong( json_decode($ordersConfirm->order->location)->lat ?? 34.620745, json_decode($ordersConfirm->order->location)->long ?? 34.620745, app()->getLocale()),
-                'delivery_date' => Carbon::parse($ordersConfirm->created_at)->format('d M Y') ,      
-                'delivery_time' => Carbon::parse($ordersConfirm->created_at)->format('h:i:s a')       
+                'delivery_date' => Carbon::parse($ordersConfirm->created_at)->format('d M Y') ,
+                'delivery_time' => Carbon::parse($ordersConfirm->created_at)->format('h:i:s a')
             ]);
         }
         return $ordersConfirmsList;
@@ -275,12 +275,12 @@ class DriverController extends Controller{
         ]);
     }
     public function addNewState(Request $request){
-    
+
         $request->validate([
             'order_id' => 'required',
             'status_id' => 'required',
         ]);
-        
+
         \DB::beginTransaction();
         try {
             $user = auth()->guard('api')->user();
@@ -291,7 +291,7 @@ class DriverController extends Controller{
                     'message' => __('Not Allowed')
                 ],403);
             }
-            
+
             $order = \Modules\Products\Entities\Orders::
             withoutGlobalScope('App\Scopes\ActiveVendorScope')
             ->where('driver_id' , $driver->id)
@@ -302,7 +302,7 @@ class DriverController extends Controller{
                     'message' => 'Not Allowed'
                 ],403);
             }
-           
+
             if(\Modules\Products\Entities\DriverOrderState::
             where('driver_id', $driver->id)
             ->where('status_id', $request->status_id )
@@ -319,9 +319,9 @@ class DriverController extends Controller{
                 ],403);
             }
             $driverORderStates =new \Modules\Products\Entities\DriverOrderState;
-            $driverORderStates->driver_id  = $driver->id; 
-            $driverORderStates->status_id  = $request->status_id; 
-            $driverORderStates->order_id  = $request->order_id; 
+            $driverORderStates->driver_id  = $driver->id;
+            $driverORderStates->status_id  = $request->status_id;
+            $driverORderStates->order_id  = $request->order_id;
             $driverORderStates->time  = date('H:i:s');
             $driverORderStates->save();
             $orderState =new \Modules\Products\Entities\OrderState;
@@ -383,7 +383,7 @@ class DriverController extends Controller{
         $user =auth()->guard('api')->user();
         $driver = \Modules\Drivers\Entities\Driver::withoutGlobalScope('App\Scopes\ActiveScope')
         ->where('user_id', $user->id)->first();
-        
+
         if ($request->hasFile('file') && $request->file('file')->isValid()) {
             $extension = strtolower($request->file('file')->extension());
             $media_new_name = strtolower(md5(time())) . "." . $extension;
@@ -437,7 +437,7 @@ class DriverController extends Controller{
                 'status_id' => $request->status_id == 1 ? 'active' : 'deactivate',
                 'location' => $request->location
             ]);
-        
+
         return response()->json([
             'data' => [
                 'location' => json_decode($driver->location),
@@ -486,7 +486,7 @@ class DriverController extends Controller{
             $rate->save();
             $userDriver = \Modules\Users\Entities\User::whereId($driver->user_id)->first();
             $userDriver->number_of_raters = $userDriver->number_of_raters + 1;
-            $userDriver->percentage_of_rating = 
+            $userDriver->percentage_of_rating =
                 ($rate->rating +  $userDriver->percentage_of_rating) / $userDriver->number_of_raters;
             $userDriver->save();
             \DB::commit();
@@ -498,5 +498,5 @@ class DriverController extends Controller{
 
         return response()->json(['message' => 'Ok']);
     }
-    
+
 }
