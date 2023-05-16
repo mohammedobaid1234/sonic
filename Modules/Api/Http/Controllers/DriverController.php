@@ -117,8 +117,8 @@ class DriverController extends Controller{
                 'image_url' => $order->vendor->vendor_logo_url,
                 'mobile_no' => $order->user->mobile_no,
                 'location' => json_decode($order->location),
-                'last_state' => $lastStateForDriver->order_status->getTranslation('name', \App::getLocale()),
-                'date' =>Carbon::parse($lastStateForDriver->created_at)->format('Y-m-d')
+                'last_state' => isset($lastStateForDriver->order_status) ? $lastStateForDriver->order_status->getTranslation('name', \App::getLocale()) : 'جديد',
+                'date' =>isset($lastStateForDriver->created_at) ?Carbon::parse($lastStateForDriver->created_at)->format('Y-m-d') : now()
                 //  $lastStateForDriver->created_at
             ]);
         }
