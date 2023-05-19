@@ -35,8 +35,8 @@ class VendorController extends Controller{
                 'id' => $restaurant->id,
                 'name' =>  $restaurant->company_name,
                 'image_url' => $restaurant->vendor_logo_url,
-                'distance' => $restaurant->distance,
-                'time' => intval($restaurant->distance/1000/30*60) . ' to ' .intval($restaurant->distance/1000/60*60)
+                'distance' => round($restaurant->distance / 1000 / 5) == 0 ? 5 : round($restaurant->distance / 1000 / 5),
+                'time' => round(($restaurant->distance/1000/60*60) + 5) . ' to ' . round(($restaurant->distance/1000/30*60) + 5)
             ]);
         }
         $allVendors = $this->NearestVendorsByTypeWithoutRadius($orderLocation->lat , $orderLocation->long,$id);
