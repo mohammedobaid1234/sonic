@@ -16,7 +16,7 @@ trait NearestDriver{
             ->having("distance", "<", $radius)
             ->whereNotIn('id', $black_list)
             ->orderBy("distance",'asc')
-            ->where('type_id', $type)
+//            ->where('type_id', $type)
             ->offset(0)
             ->limit(20)
             ->first();
