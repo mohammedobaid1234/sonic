@@ -15,7 +15,7 @@ class ProductsController extends Controller{
     }
 
     public function homePage(Request $request){
-        
+
         $user = auth()->guard('api')->user();
         $order = \Modules\Products\Entities\Orders::with('order_details.product')
         ->where('checkout_status', null)
@@ -35,7 +35,7 @@ class ProductsController extends Controller{
                 'image_url' => $store->vendor_logo_url
             ]);
         }
-        
+
         $categories = \Modules\Vendors\Entities\TypeOFVendor::get();
         $categories_list = collect([]);
         foreach ($categories as $category) {
@@ -108,7 +108,7 @@ class ProductsController extends Controller{
         ->get(['type_id']);
         foreach ($attributes as $attribute) {
             if($attribute->type_id != 1){
-           
+
                 $attribute_values = \Modules\Products\Entities\VariationAttribute::where('type_id',$attribute->type_id)
                 ->whereHas('variation.product', function($q)use($product){
                     $q->where('id', $product->id);
@@ -189,7 +189,7 @@ class ProductsController extends Controller{
             })->get();
             $productsIds = collect([]);
            foreach($variations as $variation){
-            $productsIds->push($variation->variation->product_id);         
+            $productsIds->push($variation->variation->product_id);
           }
           $query->whereIn('id', $productsIds);
         }
@@ -232,7 +232,7 @@ class ProductsController extends Controller{
         if(!$order){
             return response()->json(['message' => 'Make order'],405);
         }
-       
+
         $product = \Modules\Products\Entities\Product::whereId($request->product_id)
         ->whereHas('variations', function($q)use($request){
             $q->where('id', $request->variation_id);
@@ -247,7 +247,7 @@ class ProductsController extends Controller{
         try {
             $orderDetailsCo = \Modules\Products\Entities\OrderDetails::where('order_id', $order->id)->count();
             if($orderDetailsCo == 0){
-                 $order->seller_id = null; 
+                 $order->seller_id = null;
                  $order->save();
             }
             if(!$order->seller_id){
@@ -318,7 +318,7 @@ class ProductsController extends Controller{
                 $product->save();
             }
             if($request->flag == 3){
-               
+
                if(!$order_details){
                 return response()->json([
                     'message' => 'This Product is already deleted'
@@ -327,7 +327,7 @@ class ProductsController extends Controller{
                $product->quantity = $product->quantity + $order_details->quantity;
                $product->save();
                $order_details->delete();
-              
+
             }
             $order_details->total = $order_details->price * $order_details->quantity;
             $order_details->save();
@@ -348,7 +348,7 @@ class ProductsController extends Controller{
         }
         $order->save();
         return response()->json([
-            'message' => 'This Process Succ'
+            'message' => 'This Process succesfull'
             ,'total' => $order->total
         ]);
     }
@@ -357,7 +357,7 @@ class ProductsController extends Controller{
             'addressbook' => 'required'
         ]);
         $user = auth()->guard('api')->user();
-       
+
 
         $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)->where('checkout_status',  null)->first();
         if($order){
@@ -368,7 +368,7 @@ class ProductsController extends Controller{
         $address_book =  $user->address_book()->whereId($request->addressbook)->first();
         if(!$address_book){
             return response()->json([
-                'message' => 'address book not found' 
+                'message' => 'address book not found'
             ],403);
         }
         // $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
@@ -424,7 +424,7 @@ class ProductsController extends Controller{
                     $price_after_discount = $spesficProduct->price * $offer->value;
                 }else if($offer->type_id == 3){
                     $price_after_discount = null;
-                    
+
                 }
                 $productsList->push([
                     'id' => $spesficProduct->id,
@@ -444,13 +444,13 @@ class ProductsController extends Controller{
                 ]);
             }
        }
-       
+
        return response()->json([
         'data' => $productsList
        ]);
     }
     public function getVendorsWithFreeShipping($id){
-        
+
        $freeShippings = \Modules\Vendors\Entities\Offer::with('vendor','offer_product.product')->where('type_id', $id)->get();
        if(!$freeShippings){
         return response()->json(['message' => 'No Free Shipping Avilable Now']);
@@ -466,7 +466,7 @@ class ProductsController extends Controller{
                    'percentage_of_rating' => $product->product->percentage_of_rating,
                    'media' => $product->product->image_url,
                ]);
-    
+
            }
       }
        return response()->json([
@@ -500,7 +500,7 @@ class ProductsController extends Controller{
                 'message' => 'Make order'
             ],405);
         }
-        
+
         $orderLocation =json_decode($order->location);
         $user = auth()->guard('api')->user();
        $favorites = \Modules\Users\Entities\Favorite::with('product')->where('user_id', $user->id)->get();
@@ -513,7 +513,7 @@ class ProductsController extends Controller{
         $variationAttribute =  \Modules\Products\Entities\VariationAttribute::with('variation')->where('type_id', '1')
         ->whereHas('variation.product', function($q)use($product){
             $q->where('id', $product->id);
-        })->first(); 
+        })->first();
         $product_list_favorites->push([
              'id' => $product->id,
              'variation_id' => $variationAttribute->variation_id ,
@@ -529,9 +529,9 @@ class ProductsController extends Controller{
            ]);
          }
        return response()->json([
-         'data' => 
+         'data' =>
           $product_list_favorites
-         
+
         ]);
     }
 
@@ -569,7 +569,7 @@ class ProductsController extends Controller{
                 'country' => $vendor->user->province->country->getTranslation('name',\App::getLocale()),
                 'distance' => $vendor->distance,
             ]);
-        
+
         }
         $order_details->push([
         'id' => $order->id,
@@ -612,7 +612,7 @@ class ProductsController extends Controller{
        if($attributes->value1){
         $count++;
        }
-       
+
        if($attributes->value2){
         $count++;
        }
@@ -623,14 +623,14 @@ class ProductsController extends Controller{
                 $q->where('type_id', $attributes->type_id1)
                 ->where('value',  $attributes->value1);
             }
-        
+
         })
         ->whereHas('attributes', function($q)use($attributes){
             if($attributes->value2){
                 $q->where('type_id', $attributes->type_id2)
                 ->where('value',  $attributes->value2);
             }
-            
+
         })
         ->get();
         $product = collect([]);
@@ -646,7 +646,7 @@ class ProductsController extends Controller{
                 $product->push($variation);
             }
             }
-            
+
         }
         if(count($product) > 1){
             return response()->json([
@@ -676,6 +676,6 @@ class ProductsController extends Controller{
         })->get();
         return $menu;
     }
-  
+
 }
 
