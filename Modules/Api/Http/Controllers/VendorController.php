@@ -20,7 +20,7 @@ class VendorController extends Controller{
         // ]);
         $user = auth()->guard('api')->user();
         $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
-        ->where('checkout', null)
+        ->where('checkout_status', null)
         ->where('buyer_id', $user->id)->first();
         if(!$order){
             return response()->json([
