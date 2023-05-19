@@ -402,12 +402,15 @@ class OrdersController extends Controller
 
     public function OrderStates(Request  $request)
     {
-        $request->validate([
-            'order_id' => 'required'
-        ]);
+        // $request->validate([
+        //     'order_id' => 'required'
+        // ]);
         $user = auth()->guard('api')->user();
         $order = \Modules\Products\Entities\Orders::with('offer.offer.type', 'coupon.coupon', 'order_details.variation.attributes')
-            ->whereId($request->order_id)->where('buyer_id', $user->id)->first();
+            ->where('buyer_id', $user->id)
+                ->where('checkout_status', null)
+
+            ->first();
         if (!$order) {
             return response()->json([
                 'message' => 'Not Allowed'
@@ -516,6 +519,7 @@ class OrdersController extends Controller
             $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
                 ->where('buyer_id', $user->id)
                 ->where('seller_id', $request->vendor_id)
+                
                 ->first();
             if (!$order) {
                 return response()->json([

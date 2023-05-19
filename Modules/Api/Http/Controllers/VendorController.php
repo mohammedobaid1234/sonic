@@ -19,8 +19,8 @@ class VendorController extends Controller{
         //     'order_id' => 'required'
         // ]);
         $user = auth()->guard('api')->user();
-        $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
-        ->where('checkout_status', null)
+        $order = \Modules\Products\Entities\Orders::
+        where('checkout_status', null)
         ->where('buyer_id', $user->id)->first();
         if(!$order){
             return response()->json([
@@ -69,11 +69,12 @@ class VendorController extends Controller{
       ]);
     }
     public function viewAllTypesOfVendorsUnderCategoryOfVendorsForSearch(Request $request, $id){
-      $request->validate([
-        'order_id' => 'required'
-      ]);
+    //   $request->validate([
+    //     'order_id' => 'required'
+    //   ]);
       $user = auth()->guard('api')->user();
-      $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->where('buyer_id', $user->id)->first();
+      $order = \Modules\Products\Entities\Orders::where('checkout_status', null)
+      ->where('buyer_id', $user->id)->first();
         if(!$order){
             return response()->json([
                 'message' => 'Not Allowed This Order Not For This User'
@@ -120,11 +121,13 @@ class VendorController extends Controller{
       return response()->json(['data' => $data]);
     }
     public function vendorDetails(Request $request, $id){
-        $request->validate([
-          'order_id' => 'required'
-      ]);
+    //     $request->validate([
+    //       'order_id' => 'required'
+    //   ]);
       $user = auth()->guard('api')->user();
-      $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->where('buyer_id', $user->id)->first();
+      $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
+      ->where('checkout_status', null)
+      ->first();
         if(!$order){
             return response()->json([
                 'message' => 'Make order'
