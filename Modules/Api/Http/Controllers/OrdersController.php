@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
+use Modules\Products\Entities\OrderState;
 
 class OrdersController extends Controller
 {
@@ -175,8 +176,7 @@ class OrdersController extends Controller
 
         return response()->json(['data' => 'ok']);
     }
-    public function checkout(Request $request)
-    {
+    public function checkout(Request $request){
 
         $user = auth()->guard('api')->user();
         \DB::beginTransaction();
@@ -210,9 +210,10 @@ class OrdersController extends Controller
 
             $driver =  $this->NearestDriverByType($orderLocation->lat, $orderLocation->long, $black_list);
             if (!$driver) {
-                return response()->json([
-                    'message' => "Sorry no driver found, you can wait a few minutes if you don't find one too, please contact technical support "
-                ], 403);
+//                return response()->json([
+//                    'message' => "Sorry no driver found, you can wait a few minutes if you don't find one too, please contact technical support "
+//                ], 403);
+                OrderState::where('order_id', $order->id)->whereIn('driver_id', $black_list)->delete();
             }
             $orderState = new \Modules\Products\Entities\OrderState;
             $orderState->order_id = $order->id;

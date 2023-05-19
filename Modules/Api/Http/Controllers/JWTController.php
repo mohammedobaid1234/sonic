@@ -112,7 +112,7 @@ class JWTController extends Controller{
             if (!$token = auth()->guard('api')->attempt($array)) {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
-            
+
             \DB::commit();
         } catch (\Exception $e) {
 
@@ -123,7 +123,7 @@ class JWTController extends Controller{
         return response()->json([
             'data' =>$user,
         ], 201);
-       
+
     }
 
     public function login(Request $request){
@@ -284,7 +284,7 @@ class JWTController extends Controller{
                 'message' => 'Password less than 6 characters'
             ],403);
        }
-        
+
         $user = \Modules\Users\Entities\User::whereId($user->id)->first();
         $user->password = Hash::make($request->password) ;
         $user->save();

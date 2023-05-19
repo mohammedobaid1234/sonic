@@ -147,12 +147,9 @@ class DriverController extends Controller{
             ->withoutGlobalScope('App\Scopes\AdminActiveScope')
             ->withoutGlobalScope('App\Scopes\ActiveScope');
         }])
-
         ->with(['order_details' => function ($query) {
             $query->withoutGlobalScope('App\Scopes\OrderDetailsActiveProductsScope');
         }])
-
-
         ->where('driver_id' , $driver->id)
         ->whereId( $request->order_id)
         ->first();
@@ -176,11 +173,13 @@ class DriverController extends Controller{
                 'quantity' => $products->quantity,
             ]);
         }
+
         $lastStateForDriver = \Modules\Products\Entities\DriverOrderState::with('order_status')
-            ->where('driver_id', $driver->id)
-            ->where('order_id', $order->id)
-            ->latest()
-            ->first();
+        ->where('driver_id', $driver->id)
+        ->where('order_id', $order->id)
+        ->latest()
+        ->first();
+        
         $oderStates = \Modules\Products\Entities\DriverOrderState::with('order_status')
         ->where('driver_id', $driver->id)
         ->where('order_id', $order->id)

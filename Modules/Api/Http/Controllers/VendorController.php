@@ -15,11 +15,13 @@ class VendorController extends Controller{
       ]);
     }
     public function viewAllTypesOfVendorsUnderCategoryOfVendors(Request $request, $id){
-        $request->validate([
-            'order_id' => 'required'
-        ]);
+        // $request->validate([
+        //     'order_id' => 'required'
+        // ]);
         $user = auth()->guard('api')->user();
-        $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->where('buyer_id', $user->id)->first();
+        $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
+        ->where('checkout', null)
+        ->where('buyer_id', $user->id)->first();
         if(!$order){
             return response()->json([
                 'message' => 'Not Allowed This Order Not For This User'
@@ -55,7 +57,7 @@ class VendorController extends Controller{
                 'email' => $restaurant->user->email,
                 'mobile_no' => $restaurant->user->mobile_no,
                 'distance' => $restaurant->distance,
-                'time' => intval($restaurant->distance/1000/30*60 ). ' to ' .intval($restaurant->distance/1000/60*60) 
+                'time' => intval($restaurant->distance/1000/30*60 ). ' to ' .intval($restaurant->distance/1000/60*60)
             ]);
        }
 
@@ -97,7 +99,7 @@ class VendorController extends Controller{
                 'image_url' => $category->image_url,
             ]);
         }
-        
+
         return response()->json([
           'data' => [
             // 'nearest_vendors' =>  $vendorsNearestList,
@@ -142,7 +144,7 @@ class VendorController extends Controller{
         //       'image_url' => $product->image_url,
         //       'is_favorite' => $product->is_favorite
         //     ]);
-        //   } 
+        //   }
         //   return response()->json(['data' => $product_list]);
         // }
 
@@ -152,7 +154,7 @@ class VendorController extends Controller{
         'image_url' => $vendor->vendor_logo_url,
         'percentage_of_rating' => $vendor->user->percentage_of_rating,
         'number_of_raters' => $vendor->user->number_of_raters,
-        
+
         'mobile_no' => $vendor->user->mobile_no,
         'province' => $vendor->user->province->getTranslation('name',\App::getLocale()),
         'country' => $vendor->user->province->country->getTranslation('name',\App::getLocale()),
@@ -171,9 +173,9 @@ class VendorController extends Controller{
           'country' => $vendor->user->province->country->getTranslation('name',\App::getLocale()),
           'is_favorite' => $product->is_favorite
         ]);
-      } 
+      }
       $vendor_data= $this->SpesficVendorsByIdWithProductFeature($orderLocation->lat, $orderLocation->long,$id,'2');
-    
+
       $product_list_for_vendor=  $vendor_data->products->where('type' , '<>', null)->where('type.feature_type', '2');
       $product_list_most_papular =  collect([]);
       foreach ($product_list_for_vendor as $product) {
@@ -232,8 +234,8 @@ class VendorController extends Controller{
       ]);
 
     }
-  
-    
-   
-    
+
+
+
+
 }
