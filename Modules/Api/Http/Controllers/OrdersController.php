@@ -210,9 +210,10 @@ class OrdersController extends Controller
 
             $driver =  $this->NearestDriverByType($orderLocation->lat, $orderLocation->long, $black_list);
             if (!$driver) {
-//                return response()->json([
+                return response()->json([
 //                    'message' => "Sorry no driver found, you can wait a few minutes if you don't find one too, please contact technical support "
-//                ], 403);
+//                    'message' => $black_list
+                ], 403);
                 OrderState::where('order_id', $order->id)->whereIn('driver_id', $black_list)->delete();
             }
             $orderState = new \Modules\Products\Entities\OrderState;
