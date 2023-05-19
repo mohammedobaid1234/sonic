@@ -141,7 +141,7 @@ class ProductsController extends Controller{
                 'variation_id' => $variationAttribute->variation_id,
                 'percentage_of_rating' => $product->percentage_of_rating,
                 'media' => $medias,
-                'distance' => $distance,
+                'distance' => round(($product->distance/1000/60*60) + 5) . ' to ' . round(($product->distance/1000/30*60) + 5) . ' min',
                 'attributesList'=> $attributesList
             ]
         ]);
