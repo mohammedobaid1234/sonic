@@ -60,7 +60,7 @@ class ProductsController extends Controller{
                 'country' => $restaurant->user->province->country->getTranslation('name', \App::getLocale()),
                 'rating' => $restaurant->user->percentage_of_rating,
                 'distance' => round($restaurant->distance / 1000 / 5) == 0 ? 5 : round($restaurant->distance / 1000 / 5),
-                'time' => round(($restaurant->distance/1000/60*60) + 5) . ' to ' . round(($restaurant->distance/1000/30*60) + 5)
+                'time' => round(($restaurant->distance/1000/60*60) + 5) . ' to ' . round(($restaurant->distance/1000/30*60) + 5). ' min'
             ]);
         }
         $papularStars = $this->NearestVendorsByType($orderLocation->lat, $orderLocation->long,'3', $user->province_id);
