@@ -157,10 +157,12 @@ class VendorController extends Controller{
         'image_url' => $vendor->vendor_logo_url,
         'percentage_of_rating' => $vendor->user->percentage_of_rating,
         'number_of_raters' => $vendor->user->number_of_raters,
-
         'mobile_no' => $vendor->user->mobile_no,
         'province' => $vendor->user->province->getTranslation('name',\App::getLocale()),
         'country' => $vendor->user->province->country->getTranslation('name',\App::getLocale()),
+        'rating' => $vendor->user->percentage_of_rating,
+        'distance' => round($vendor->distance / 1000 / 5) == 0 ? 5 : round($vendor->distance / 1000 / 5),
+        'time' => round(($vendor->distance/1000/60*60) + 5) . ' to ' . round(($vendor->distance/1000/30*60) + 5)
       ];
       // return \Modules\Products\Entities\Product::whereId('5')->first();
       $product_list =  collect([]);
