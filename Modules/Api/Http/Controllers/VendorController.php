@@ -56,8 +56,8 @@ class VendorController extends Controller{
                 'number_of_raters' => $restaurant->user->number_of_raters,
                 'email' => $restaurant->user->email,
                 'mobile_no' => $restaurant->user->mobile_no,
-                'distance' => $restaurant->distance,
-                'time' => intval($restaurant->distance/1000/30*60 ). ' to ' .intval($restaurant->distance/1000/60*60)
+                'distance' => round($restaurant->distance / 1000 / 5) == 0 ? 5 : round($restaurant->distance / 1000 / 5),
+                'time' => round(($restaurant->distance/1000/60*60) + 5) . ' to ' . round(($restaurant->distance/1000/30*60) + 5)
             ]);
        }
 
