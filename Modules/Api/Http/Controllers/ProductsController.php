@@ -680,6 +680,45 @@ class ProductsController extends Controller{
         })->get();
         return $menu;
     }
+    public function filleterName($name){
+        $user = auth()->guard('api')->user();
+        $order = \Modules\Products\Entities\Orders::where('buyer_id', $user->id)
+        ->where('checkout_status', null)
+        ->first();
+          if(!$order){
+              return response()->json([
+                  'message' => 'Make order'
+              ],405);
+          }
+          $query = \Modules\Products\Entities\Product::with([]);
+        // if ($request->has('name') && $request->get('name') != null) {
+          $query->where('name->ar', 'like', "%$name}%");
+          $query->orWhere('name->en', 'like', "%$name}%");
+        // }
+        $products =  $query->get();
+        $data = collect([]);
+        foreach($products as $product){
+        $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
+        $vendorLocation =json_decode($vendorForDistance->location);
+        $distance =  $this->distanceBetweenTwoPoints($vendorLocation->lat, $vendorLocation->long,$orderLocation->lat, $orderLocation->long);
+        //   $distance =  $this->spesficVendorDistance($orderLocation->lat, $orderLocation->long,$product->vendor_id);
+          $data->push([
+            'id' => $product->id,
+            'name' => $product->getTranslation('name', \App::getLocale()),
+            'description' =>$product->getTranslation('description', \App::getLocale()),
+            'price' => $product->price,
+            'percentage_of_rating' => $product->percentage_of_rating,
+            'image' => $product->image_url,
+            'distance' => $distance,
+            'location' => $vendorLocation,
+            'location_formate' => getLocationFromLatAndLong( $vendorLocation->lat ?? 34.620745, $vendorLocation->long ?? 34.620745, app()->getLocale()),
+            'isFavorite' => $product->is_favorite
+          ]);
+        }
+        return response()->json([
+          'data' => $data
+        ]);
+    }
 
 }
 

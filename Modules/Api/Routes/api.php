@@ -37,6 +37,8 @@ Route::group(['middleware' => 'api'], function($router) {
     Route::post('/favorites','ProductsController@favorites');
     Route::get('/cart-page','ProductsController@cartPage');
     Route::get('/filter-search','ProductsController@filterSearch');
+    Route::post('/filter/{name}','ProductsController@filleterName');
+
     Route::post('/add-delete-form-cart','ProductsController@addAndDeleteFromCart');
     Route::get('/get-products-with-offer/{id}','ProductsController@getProductsUnderOffer');
     Route::post('/vendor/{id}','VendorController@vendorDetails');
