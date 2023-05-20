@@ -690,6 +690,7 @@ class ProductsController extends Controller{
                   'message' => 'Make order'
               ],405);
           }
+          dd($name);
           $query = \Modules\Products\Entities\Product::with([]);
         // if ($request->has('name') && $request->get('name') != null) {
           $query->where('name->ar', 'like', "%$name}%");
