@@ -697,7 +697,7 @@ class ProductsController extends Controller{
         //   $query->orWhere('name->en', 'like', "%$name}%");
         // }
         // $products =  $query->get();
-        return $products;
+        return $products->toSql();
         $data = collect([]);
         foreach($products as $product){
         $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
