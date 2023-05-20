@@ -691,13 +691,13 @@ class ProductsController extends Controller{
               ],405);
           }
           $products = \Modules\Products\Entities\Product::where('name->ar', 'like', "%$name}%")
-          ->orWhere('name->en', 'like', "%$name}%")->get();
+          ->orWhere('name->en', 'like', "%$name}%")->toSql();
         // if ($request->has('name') && $request->get('name') != null) {
         //   $query->where('name->ar', 'like', "%$name}%");
         //   $query->orWhere('name->en', 'like', "%$name}%");
         // }
         // $products =  $query->get();
-        return $products->toSql();
+        return $products;
         $data = collect([]);
         foreach($products as $product){
         $vendorForDistance = \Modules\Vendors\Entities\Vendors::whereId($product->vendor_id)->active()->first();
