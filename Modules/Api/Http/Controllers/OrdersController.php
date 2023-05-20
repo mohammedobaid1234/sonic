@@ -284,8 +284,8 @@ class OrdersController extends Controller
             //     ], 403);
             // }
 
-            return $driver;
-            $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->first();
+            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->first();
+            return $order;
             if ($order->last_status != null) {
                 return response()->json([
                     'message' => 'This Order is have status '
