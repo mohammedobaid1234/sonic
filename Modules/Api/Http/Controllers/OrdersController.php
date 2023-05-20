@@ -502,30 +502,35 @@ class OrdersController extends Controller
     public function applyCoupon(Request $request)
     {
         $request->validate([
-            'order_id' => 'required',
+            // 'order_id' => 'required',
             'code' => 'required',
-            'vendor_id' => 'required',
+            // 'vendor_id' => 'required',
         ]);
         \DB::beginTransaction();
         try {
             $user = auth()->guard('api')->user();
-            $coupon = \Modules\Vendors\Entities\Coupon::where('vendor_id', $request->vendor_id)
+            $order = \Modules\Products\Entities\Orders::with('offer.offer.type', 'coupon.coupon', 'order_details.variation.attributes')
+            ->where('buyer_id', $user->id)
+                ->where('checkout_status', null)
+            ->first();
+            if (!$order) {
+                return response()->json([
+                    'message' => 'Not Allowed'
+                ], 403);
+            }
+            $coupon = \Modules\Vendors\Entities\Coupon::where('vendor_id', $order->seller_id)
                 ->where('code', $request->code)->first();
             if (!$coupon) {
                 return response()->json([
                     'message' => 'Not Found Coupon'
                 ], 403);
             }
-            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
-                ->where('buyer_id', $user->id)
-                ->where('seller_id', $request->vendor_id)
-                
-                ->first();
-            if (!$order) {
-                return response()->json([
-                    'message' => 'Not Allowed'
-                ], 403);
-            }
+            // $order = \Modules\Products\Entities\Orders::whereId($request->order_id)
+            //     ->where('buyer_id', $user->id)
+            //     ->where('seller_id', $request->vendor_id)
+
+            //     ->first();
+
             $orderUser = \Modules\Users\Entities\UserCoupon::where('order_id', $request->order_id)->first();
             if ($orderUser) {
                 return response()->json([
