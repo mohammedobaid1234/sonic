@@ -19,7 +19,7 @@ class Category extends Model implements HasMedia{
     protected $appends = ['image_url'];
     protected static function boot(){
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\ActiveScope);
+        // static::addGlobalScope(new \App\Scopes\ActiveScope);
     }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{
         $this->addMediaConversion('thumb')
@@ -38,8 +38,8 @@ class Category extends Model implements HasMedia{
     public function image(){
         return $this->morphOne(Media::class,'model');
     }
-    
-    
+
+
     public function created_by_user(){
         return $this->belongsTo(\Modules\Users\Entities\User::class, 'created_by');
     }

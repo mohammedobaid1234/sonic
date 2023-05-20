@@ -17,7 +17,7 @@ class Driver extends Model implements HasMedia{
     protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s a'];
     protected static function boot(){
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\ActiveScopeForDriver);
+        // static::addGlobalScope(new \App\Scopes\ActiveScopeForDriver);
     }
     public function scopeWhereActive($query){
         return $query->where('status_id', 1);
@@ -30,7 +30,7 @@ class Driver extends Model implements HasMedia{
     public function image(){
         return $this->morphOne(Media::class,'model');
     }
-   
+
     public function getLicenseImageUrlAttribute(){
         $image = \Spatie\MediaLibrary\MediaCollections\Models\Media::
         where('collection_name', 'driver-license-image')

@@ -13,7 +13,7 @@ class Product extends Model implements HasMedia{
     use SoftDeletes;
     use HasTranslations;
     use InteractsWithMedia;
-    
+
     protected $fillable = [
         'product_code','name', 'description','category_id', 'vendor_id', 'currency_id',
         'price','quantity', 'status_id', 'created_by', 'product_code'
@@ -24,9 +24,9 @@ class Product extends Model implements HasMedia{
     protected $appends = ['image_url', 'price', 'quantity','is_favorite'];
     protected static function boot(){
         parent::boot();
-        static::addGlobalScope(new \App\Scopes\ActiveScope);
-        static::addGlobalScope(new \App\Scopes\ActiveStateForProducts);
-        static::addGlobalScope(new \App\Scopes\AdminActiveScope);
+        // static::addGlobalScope(new \App\Scopes\ActiveScope);
+        // static::addGlobalScope(new \App\Scopes\ActiveStateForProducts);
+        // static::addGlobalScope(new \App\Scopes\AdminActiveScope);
     }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{
         $this->addMediaConversion('thumb')
@@ -52,7 +52,7 @@ class Product extends Model implements HasMedia{
     public function vendor(){
         return $this->belongsTo(\Modules\Vendors\Entities\Vendors::class,'vendor_id');
     }
-    
+
     public function created_by_user(){
         return $this->belongsTo(\Modules\Users\Entities\User::class, 'created_by');
     }
