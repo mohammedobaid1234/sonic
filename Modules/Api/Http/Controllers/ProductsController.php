@@ -572,9 +572,13 @@ class ProductsController extends Controller{
             ]);
 
         }
+       $lang = app()->getLocale();
+
         $order_details->push([
         'id' => $order->id,
         'total' => $order->total,
+        'location' => getLocationFromLatAndLong( json_decode($order->location)->lat ?? 34.620745, json_decode($order->location)->long ?? 34.620745, $lang),
+
         'after_discount' => $order->after_discount,
         'order_details' =>  $products_in_order,
         'can_checkout' => $vendor->status_id == 1 ? true : false,
