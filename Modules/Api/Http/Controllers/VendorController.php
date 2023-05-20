@@ -211,7 +211,7 @@ class VendorController extends Controller{
             'percentage_of_rating' => $products->product->percentage_of_rating,
             'number_of_raters' => $products->product->number_of_raters,
             'price' => $products->product->price,
-            'image_url' => $product->product->image_url,
+            'image_url' => $products->product->image_url,
             'province' => $vendor->user->province->getTranslation('name',\App::getLocale()),
             'country' => $vendor->user->province->country->getTranslation('name',\App::getLocale()),
             'distance' => round($vendor->distance / 1000 / 5) == 0 ? 5 : round($vendor->distance / 1000 / 5),
