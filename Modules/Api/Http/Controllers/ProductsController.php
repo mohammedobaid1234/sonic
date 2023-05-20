@@ -692,7 +692,7 @@ class ProductsController extends Controller{
           }
           $query = \Modules\Products\Entities\Product::with([]);
         // if ($request->has('name') && $request->get('name') != null) {
-          $query->where('name->ar', 'like', "%$name}%");
+        //   $query->where('name->ar', 'like', "%$name}%");
           $query->orWhere('name->en', 'like', "%$name}%");
         // }
         $products =  $query->get();
