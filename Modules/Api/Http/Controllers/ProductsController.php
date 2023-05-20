@@ -690,12 +690,13 @@ class ProductsController extends Controller{
                   'message' => 'Make order'
               ],405);
           }
-          $query = \Modules\Products\Entities\Product::with([]);
+          $products = \Modules\Products\Entities\Product::where('name->ar', 'like', "%$name}%")
+          ->orWhere('name->en', 'like', "%$name}%")->get();
         // if ($request->has('name') && $request->get('name') != null) {
         //   $query->where('name->ar', 'like', "%$name}%");
         //   $query->orWhere('name->en', 'like', "%$name}%");
         // }
-        $products =  $query->get();
+        // $products =  $query->get();
         return $products;
         $data = collect([]);
         foreach($products as $product){
