@@ -278,11 +278,11 @@ class OrdersController extends Controller
                 ->latest()
                 ->first();
 
-            if (!$orderState || $orderState->status_id != '3') {
-                return response()->json([
-                    'message' => 'Not Allowed This Order Not For You'
-                ], 403);
-            }
+            // if (!$orderState || $orderState->status_id != '3') {
+            //     return response()->json([
+            //         'message' => 'Not Allowed This Order Not For You'
+            //     ], 403);
+            // }
 
             $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->first();
             if ($order->last_status != null) {
