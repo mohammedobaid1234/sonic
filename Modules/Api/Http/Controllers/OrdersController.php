@@ -283,13 +283,14 @@ class OrdersController extends Controller
             //         'message' => 'Not Allowed This Order Not For You'
             //     ], 403);
             // }
+
             $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->first();
+            return $order;
             if ($order->last_status != null) {
                 return response()->json([
                     'message' => 'This Order is have status '
                 ], 403);
             }
-            return $order;
 
             $driverOrdersBuffering = \Modules\Drivers\Entities\DriverOrdersBuffering::where('driver_id', $driver->id)
                 ->where('order_id', $request->order_id)
