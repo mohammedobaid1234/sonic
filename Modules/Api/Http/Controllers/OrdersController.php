@@ -284,7 +284,7 @@ class OrdersController extends Controller
             //     ], 403);
             // }
 
-            $order = \Modules\Products\Entities\Orders::whereId($request->order_id)->first();
+            $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->toSql();
             return $order;
             if ($order->last_status != null) {
                 return response()->json([
