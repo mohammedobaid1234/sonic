@@ -285,7 +285,7 @@ class OrdersController extends Controller
             // }
 
             $order = \Modules\Products\Entities\Orders::with('vendor')->whereId($request->order_id)->first();
-            return $order;
+            // return $order;
             if ($order->last_status != null) {
                 return response()->json([
                     'message' => 'This Order is have status '
