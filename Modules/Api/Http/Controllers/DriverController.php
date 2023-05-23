@@ -179,7 +179,7 @@ class DriverController extends Controller{
         ->where('order_id', $order->id)
         ->latest()
         ->first();
-        
+
         $oderStates = \Modules\Products\Entities\DriverOrderState::with('order_status')
         ->where('driver_id', $driver->id)
         ->where('order_id', $order->id)
@@ -232,7 +232,6 @@ class DriverController extends Controller{
                'message' => 'Not Allowed'
             ],403);
         }
-
         $ordersConfirms = \Modules\Drivers\Entities\DriverOrdersBuffering::where('driver_id', $driver->id)
         ->with('order.vendor')
         ->orderby('created_at', 'DESC')

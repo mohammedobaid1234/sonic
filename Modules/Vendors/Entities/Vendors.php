@@ -17,11 +17,11 @@ class Vendors extends Model implements HasMedia{
     protected $appends = ['vendor_logo_url'];
     protected static function boot(){
         parent::boot();
-        // static::addGlobalScope(new \App\Scopes\ActiveScope);
+        static::addGlobalScope(new \App\Scopes\ActiveScope);
     }
     public function scopeActive($query){
         return $query->where(function($query){
-        //    $query->where('status_id', 1);
+           $query->where('status_id', 1);
         });
     }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{

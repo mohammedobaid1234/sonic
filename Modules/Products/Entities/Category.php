@@ -19,7 +19,7 @@ class Category extends Model implements HasMedia{
     protected $appends = ['image_url'];
     protected static function boot(){
         parent::boot();
-        // static::addGlobalScope(new \App\Scopes\ActiveScope);
+        static::addGlobalScope(new \App\Scopes\ActiveScope);
     }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{
         $this->addMediaConversion('thumb')

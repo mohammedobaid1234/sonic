@@ -5,11 +5,11 @@
     <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
 
         <ul class="menu-nav">
-            
+
             <div class="p-1" style="padding-top: 0px !important">
                 <input type="text" class="form-control mb-1" placeholder="{{__( "Search in List ...")}}" data-action="navbar-filter" />
             </div>
-       
+
             <li class="menu-item  @if(isset($data['activePage']['dashboard'])) menu-item-active   @endif" aria-haspopup="true">
                 <a href="{{route('dashboard')}}" class="menu-link" >
                     <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo4/dist/../src/media/svg/icons/Home/Home.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
@@ -35,7 +35,7 @@
                     <span class="menu-text dashbord" >{{__('Change Password')}}</span>
                 </a>
             </li>
-         
+
             {{-- <li class="@if(isset($data['activePage']['products']) && $data['activePage']['products'] == 'categories') active @endif">
                 <a href="{{route('categories.manage')}}">
                     <i class="fa-solid fa-sitemap "></i>
@@ -106,9 +106,9 @@
                             @endif
                         </ul>
                     </div>
-                
+
                 </li>
-            @endIf            
+            @endIf
             @if(\Auth::user()->can('products_module_products_manage') || \Auth::user()->can('products_module_product_status_manage'))
 
                 <li class="menu-item menu-item-submenu @if(isset($data['activePage']['products'])) menu-item-open menu-item-here  @endif " aria-haspopup="true" data-menu-toggle="hover">
@@ -151,12 +151,12 @@
                                     </a>
                                 </li>
                             @endif
-                          
+
                         </ul>
                     </div>
-                
+
                 </li>
-            @endIf            
+            @endIf
             @if(\Auth::user()->can('products_module_orders_manage') || \Auth::user()->can('products_module_order_status_manage'))
 
                 <li class="menu-item menu-item-submenu @if(isset($data['activePage']['orders'])) menu-item-open menu-item-here  @endif " aria-haspopup="true" data-menu-toggle="hover">
@@ -199,13 +199,13 @@
                                     </a>
                                 </li>
                             @endif
-                          
+
                         </ul>
                     </div>
-                
+
                 </li>
-            @endIf            
-            @if(\Auth::user()->can('vendors_module_vendors_manage') 
+            @endIf
+            @if(\Auth::user()->can('vendors_module_vendors_manage')
             || \Auth::user()->can('vendors_module_vendors_status_manage')
             || \Auth::user()->can('vendors_module_vendors_types_manage')
             || \Auth::user()->can('vendors_module_coupons_manage')
@@ -262,7 +262,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(\Auth::user()->can('vendors_module_vendors_coupons_manage'))
+                            @if(\Auth::user()->can('vendors_module_coupons_manage'))
                                 <li class="menu-item  @if(isset($data['activePage']['vendors']) && $data['activePage']['vendors'] == 'coupons') menu-item-active @endif" aria-haspopup="true">
                                     <a href="{{route('coupons.manage')}}" class="menu-link">
                                         <i class="menu-bullet menu-bullet-dot">
@@ -272,7 +272,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(\Auth::user()->can('vendors_module_vendors_offers_manage'))
+                            @if(\Auth::user()->can('vendors_module_offer_manage'))
                                 <li class="menu-item  @if(isset($data['activePage']['vendors']) && $data['activePage']['vendors'] == 'offers') menu-item-active @endif" aria-haspopup="true">
                                     <a href="{{route('offers.manage')}}" class="menu-link">
                                         <i class="menu-bullet menu-bullet-dot">
@@ -282,14 +282,14 @@
                                     </a>
                                 </li>
                             @endif
-                          
+
                         </ul>
                     </div>
-                
+
                 </li>
-            @endIf            
-           
-           @if(\Auth::user()->can('drivers_module_drivers_manage') 
+            @endIf
+
+           @if(\Auth::user()->can('drivers_module_drivers_manage')
             || \Auth::user()->can('drivers_module_driver_status_manage')
             || \Auth::user()->can('drivers_module_drivers_types_manage')
             )
@@ -344,13 +344,13 @@
                                     </a>
                                 </li>
                             @endif
-                          
+
                         </ul>
                     </div>
-                
+
                 </li>
-            @endIf            
-           @if(\Auth::user()->can('users_module_users_manage') 
+            @endIf
+           @if(\Auth::user()->can('users_module_users_manage')
             || \Auth::user()->can('users_module_user_status_manage')
             || \Auth::user()->can('users_module_otps_manage')
             || \Auth::user()->can('users_module_roles_manage')
@@ -416,17 +416,17 @@
                                     </a>
                                 </li>
                             @endif
-                          
+
                         </ul>
                     </div>
-                
+
                 </li>
-             @endIf            
-            @if (\Auth::user()->can('cms_module_contact_us_manage') 
-            || \Auth::user()->can('cms_module_social_media_links_manage') 
-            || \Auth::user()->can('cms_module_terms_manage') 
+             @endIf
+            @if (\Auth::user()->can('cms_module_contact_us_manage')
+            || \Auth::user()->can('cms_module_social_media_links_manage')
+            || \Auth::user()->can('cms_module_terms_manage')
             )
- 
+
                  <li class="menu-item menu-item-submenu @if(isset($data['activePage']['cms'])) menu-item-open menu-item-here  @endif " aria-haspopup="true" data-menu-toggle="hover">
                      <a href="javascript:;" class="menu-link menu-toggle">
                          <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo1/dist/../src/media/svg/icons/Text/Bullet-list.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
@@ -477,16 +477,16 @@
                                      </a>
                                  </li>
                              @endif
-                           
+
                          </ul>
                      </div>
-                 
+
                  </li>
             @endIf
-            @if (\Auth::user()->can('core_module_county_province_manage') 
-            || \Auth::user()->can('core_module_ads_manage') 
+            @if (\Auth::user()->can('core_module_county_province_manage')
+            || \Auth::user()->can('core_module_ads_manage')
             )
- 
+
                 <li class="menu-item menu-item-submenu @if(isset($data['activePage']['core'])) menu-item-open menu-item-here  @endif " aria-haspopup="true" data-menu-toggle="hover">
                     <a href="javascript:;" class="menu-link menu-toggle">
                         <span class="svg-icon svg-icon-primary svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo1/dist/../src/media/svg/icons/Text/Bullet-list.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
@@ -527,13 +527,13 @@
                                     </a>
                                 </li>
                             @endif
-                        
+
                         </ul>
                     </div>
-                
+
                 </li>
             @endIf
-            
+
         </ul><!-- /.nav-list -->
     </div>
     <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">

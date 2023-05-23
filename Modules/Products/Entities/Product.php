@@ -24,9 +24,9 @@ class Product extends Model implements HasMedia{
     protected $appends = ['image_url', 'price', 'quantity','is_favorite'];
     protected static function boot(){
         parent::boot();
-        // static::addGlobalScope(new \App\Scopes\ActiveScope);
-        // static::addGlobalScope(new \App\Scopes\ActiveStateForProducts);
-        // static::addGlobalScope(new \App\Scopes\AdminActiveScope);
+        static::addGlobalScope(new \App\Scopes\ActiveScope);
+        static::addGlobalScope(new \App\Scopes\ActiveStateForProducts);
+        static::addGlobalScope(new \App\Scopes\AdminActiveScope);
     }
     public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media  $media = null): void{
         $this->addMediaConversion('thumb')
