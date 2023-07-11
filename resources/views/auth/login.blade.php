@@ -6,7 +6,7 @@
 		<title>{{__('cp.Login_Into_Panel')}}</title>
 		<meta name="description" content="Login page example" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		
+
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 		<link href="{{asset('/public/assets/css/pages/login/login-4.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{asset('/public/assets/plugins/global/plugins.bundle.css')}}" rel="stylesheet" type="text/css" />
@@ -51,13 +51,13 @@
                                         </ul>
                                     </div>
                                 @endif
-                                
+
                                 @if (session('status'))
                                     <div class="alert alert-success">
                                         {{ session('status') }}
                                     </div>
                                 @endif
-        
+
 								<!--begin::Form-->
 								<form id="login" class="form" role="form" novalidate="novalidate" id="kt_login_signin_form"  action="{{url(app()->getLocale().'/admin/login')}}" method="post">
 								    @csrf
@@ -74,10 +74,10 @@
 								<!--end::Form-->
 							</div>
 							<!--end::Signin-->
-							
+
 						</div>
 						<!--end::Aside body-->
-						
+
 					</div>
 					<!--end: Aside Container-->
 				</div>
@@ -87,7 +87,7 @@
 					<!--begin::Content body-->
 					<div class="d-flex flex-column-fluid flex-lg-center">
 						<div class="d-flex flex-column justify-content-center">
-							<h3 class="display-3 font-weight-bold my-7 text-white">{{__('Welcome Sonic to admin panel')}}</h3>
+							<h3 class="display-3 font-weight-bold my-7 text-white">{{__('Welcome Camel Express to admin panel')}}</h3>
 							{{-- <p class="font-weight-bold font-size-lg text-white opacity-80">The ultimate Bootstrap, Angular 8, React &amp; VueJS admin theme
 							<br />framework for next generation web apps.</p> --}}
 						</div>
